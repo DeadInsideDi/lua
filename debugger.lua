@@ -152,7 +152,7 @@ return (function()
 
   return Debugger
 end)()
--- Debugger = loadstring(game:HttpGet("https://pastebin.com/raw/qS85hJYn"))()
+-- Debugger = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/debugger.lua"))()
 
 -- FindCloseInstances(number, Instance)
 -- PrintCloseParts(number, Instance) / MarkPrintCloseParts(number, Instance, Color3)
