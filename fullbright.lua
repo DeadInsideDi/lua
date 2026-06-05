@@ -172,7 +172,7 @@ return (function()
   UpdateLighting()
   return FullBright
 end)()
--- FullBright = loadstring(game:HttpGet("https://pastebin.com/raw/fgX709qL"))()
+-- FullBright = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/fullbright.lua"))()
 
 -- SetEnabled(bool) / Enable / Disable
 -- SetAmbient(Color3) / SetOutdoorAmbient(Color3)
