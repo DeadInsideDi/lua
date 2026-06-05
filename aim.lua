@@ -23,7 +23,7 @@ return (function()
     return Value
   end
 
-  local SmoothnessValue = FindValueInstance("Number", "Aim_Smoothness", 0.1)
+  local SpeedValue = FindValueInstance("Number", "Aim_Speed", 0.5)
   local AimPartValue = FindValueInstance("String", "Aim_AimPart", "HumanoidRootPart")
   local TeamCheckValue = FindValueInstance("Bool", "Aim_TeamCheck", false)
   local MaxDistanceValue = FindValueInstance("Number", "Aim_MaxDistance", 5000)
@@ -47,7 +47,7 @@ return (function()
     return Humanoid and Humanoid.Health or 100
   end
 
-  local function IsSameTeam(player)
+  local function IsSameTeam(player): boolean
     return player.Team == Client.Team
   end
 
@@ -57,10 +57,10 @@ return (function()
 
   function Aim.AimToPosition(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
-    print('3')
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
-    -- local Alpha = math.min(1, SmoothnessValue.Value)
-    -- Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, Alpha)
+    for i = 1, 10 do
+      Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, SpeedValue.Value))
+    end
   end
 
   function Aim.AimToInstance(target: Model | Part): ()
@@ -75,10 +75,8 @@ return (function()
   end
 
   function Aim.AimToPlayer(player: Player): ()
-    print('1')
     if player and player.Character then
       local Part = GetPartOfModel(player.Character)
-      print('2')
       if Part then Aim.AimToPosition(Part.Position) end
     end
   end
@@ -119,8 +117,8 @@ return (function()
     return BestTarget
   end
 
-  function Aim.SetSmoothness(value: number): ()
-    SmoothnessValue.Value = value == nil and SmoothnessValue.Value or value
+  function Aim.SetSpeed(value: number): ()
+    SpeedValue.Value = value == nil and SpeedValue.Value or value
   end
 
   function Aim.SetAimPart(value: string): ()
@@ -161,6 +159,6 @@ end)()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
 -- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
--- SetSmoothness(number) / SetAimPart(string) / SetTeamCheck(bool)
+-- SetSpeed(number) / SetAimPart(string) / SetTeamCheck(bool)
 -- SetMaxDistance(number) / SetMaxAngle(number)
 -- SetDistanceWeight(number) / SetAngleWeight(number) / SetHealthWeight(number)
