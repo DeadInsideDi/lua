@@ -32,7 +32,7 @@ return (function()
   local AngleWeightValue = FindValueInstance("Number", "Aim_AngleWeightValue", 1)
   local HealthWeightValue = FindValueInstance("Number", "Aim_HealthWeight", 0)
 
-  local function GetAngleOffset(cameraCFrame: CFrame, targetPos: Vector3)
+  local function GetAngleOffset(cameraCFrame: CFrame, targetPos: Vector3): number
     local Dir = (targetPos - cameraCFrame.Position).Unit
     local Dot = cameraCFrame.LookVector:Dot(Dir)
     return math.deg(math.acos(math.clamp(Dot, -1, 1)))
@@ -42,7 +42,7 @@ return (function()
     return (fromPos - toPos).Magnitude
   end
 
-  local function GetHealthOfPlayer(player)
+  local function GetHealthOfPlayer(player): number
     local Humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     return Humanoid and Humanoid.Health or 100
   end
@@ -51,18 +51,18 @@ return (function()
     return player.Team == Client.Team
   end
 
-  local function GetPartOfModel(model: Model)
+  local function GetPartOfModel(model: Model): Instance
     return model:FindFirstChild(AimPartValue.Value) or model.PrimaryPart or model:FindFirstChildOfClass("BasePart")
   end
 
-  function Aim.AimToPosition(position: Vector3)
+  function Aim.AimToPosition(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
     local Alpha = math.min(1, SmoothnessValue.Value)
     Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, Alpha)
   end
 
-  function Aim.AimToInstance(target: Model | Part)
+  function Aim.AimToInstance(target: Model | Part): ()
     local Position
     if target:IsA("Model") then
       Position = GetPartOfModel(target).Position
@@ -73,14 +73,14 @@ return (function()
     if Position then Aim.AimToPosition(Position) end
   end
 
-  function Aim.AimToPlayer(player: Player)
+  function Aim.AimToPlayer(player: Player): ()
     if player and player.Character then
       local Part = GetPartOfModel(player.Character)
       if Part then Aim.AimToPosition(Part.Position) end
     end
   end
 
-  function Aim.ChoosePlayerToAim(playerList: {Players})
+  function Aim.ChoosePlayerToAim(playerList: {Player}): Player
     local PlayersList = playerList or Players:GetPlayers()
     local CameraCFrame = Camera.CFrame
     local BestTarget = nil
@@ -116,35 +116,35 @@ return (function()
     return BestTarget
   end
 
-  function Aim.SetSmoothness(value: number)
+  function Aim.SetSmoothness(value: number): ()
     SmoothnessValue.Value = value == nil and SmoothnessValue.Value or value
   end
 
-  function Aim.SetAimPart(value: string)
+  function Aim.SetAimPart(value: string): ()
     AimPartValue.Value = value == nil and AimPartValue.Value or value
   end
 
-  function Aim.SetTeamCheck(value: boolean)
+  function Aim.SetTeamCheck(value: boolean): ()
     TeamCheckValue.Value = value == nil and TeamCheckValue.Value or value
   end
 
-  function Aim.SetMaxDistance(value: number)
+  function Aim.SetMaxDistance(value: number): ()
     MaxDistanceValue.Value = value == nil and MaxDistanceValue.Value or value
   end
 
-  function Aim.SetMaxAngle(value: number)
+  function Aim.SetMaxAngle(value: number): ()
     MaxAngleValue.Value = value == nil and MaxAngleValue.Value or value
   end
 
-  function Aim.SetDistanceWeight(value: number)
+  function Aim.SetDistanceWeight(value: number): ()
     DistanceWeightValue.Value = value == nil and DistanceWeightValue.Value or value
   end
 
-  function Aim.SetAngleWeight(value: number)
+  function Aim.SetAngleWeight(value: number): ()
     AngleWeightValue.Value = value == nil and AngleWeightValue.Value or value
   end
 
-  function Aim.SetHealthWeight(value: number)
+  function Aim.SetHealthWeight(value: number): ()
     HealthWeightValue.Value = value == nil and HealthWeightValue.Value or value
   end
 
