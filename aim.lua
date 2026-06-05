@@ -47,7 +47,7 @@ return (function()
     return Humanoid and Humanoid.Health or 100
   end
 
-  local function IsSameTeam(player): boolean
+  local function IsSameTeam(player)
     return player.Team == Client.Team
   end
 
@@ -57,9 +57,10 @@ return (function()
 
   function Aim.AimToPosition(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
+    print('3')
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
-    local Alpha = math.min(1, SmoothnessValue.Value)
-    Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, Alpha)
+    -- local Alpha = math.min(1, SmoothnessValue.Value)
+    -- Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, Alpha)
   end
 
   function Aim.AimToInstance(target: Model | Part): ()
@@ -74,8 +75,10 @@ return (function()
   end
 
   function Aim.AimToPlayer(player: Player): ()
+    print('1')
     if player and player.Character then
       local Part = GetPartOfModel(player.Character)
+      print('2')
       if Part then Aim.AimToPosition(Part.Position) end
     end
   end
@@ -154,7 +157,7 @@ return (function()
 
   return Aim
 end)()
--- Aim = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/aim.lua"))()
+-- Aim = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
 -- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
