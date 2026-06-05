@@ -213,7 +213,7 @@ return (function()
 
   return Tracers
 end)()
--- Tracers = loadstring(game:HttpGet("https://pastebin.com/raw/mkvK8KPJ"))()
+-- Tracers = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/tracers.lua"))()
 
 -- EnableAllProfiles / DisableAllProfiles / CreateTracerProfile -V-
 -- AddInstance(Instance) / AddPosition(Vector3) / AddPlayer(Player)
