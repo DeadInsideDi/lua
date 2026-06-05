@@ -37,7 +37,7 @@ return (function()
 
   return Controller
 end)()
--- Controller = loadstring(game:HttpGet("https://pastebin.com/raw/tbQaB0X0"))()
+-- Controller = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/controller.lua"))()
 
 -- click(number, number, withInset=True) / clickGui(GuiObject)
 -- tap(Enum.KeyCode)
