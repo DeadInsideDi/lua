@@ -58,12 +58,12 @@ return (function()
   function Aim.AimToPosition(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
-    Camera.CameraType = Enum.CameraType.Scriptable
-    for i = 1, 100 do
-      task.wait(0.01)
+    -- Camera.CameraType = Enum.CameraType.Scriptable
+    for i = 1, 2 do
+      -- task.wait(0.01)
       Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, SpeedValue.Value))
     end
-    Camera.CameraType = Enum.CameraType.Custom
+    -- Camera.CameraType = Enum.CameraType.Custom
   end
 
   function Aim.AimToInstance(target: Model | Part): ()
