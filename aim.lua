@@ -47,7 +47,7 @@ return (function()
     return Humanoid and Humanoid.Health or 100
   end
 
-  local function IsSameTeam(player)
+  local function IsSameTeam(player): boolean
     return player.Team == Client.Team
   end
 
