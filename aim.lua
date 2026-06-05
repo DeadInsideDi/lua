@@ -103,7 +103,7 @@ return (function()
       local AngleOffset = GetAngleOffset(CameraCFrame, TargetPos)
       if AngleOffset > MaxAngleValue then continue end
 
-      local Score = Dist * DistanceWeightValue.Value + AngleOffset * AngleWeightValue
+      local Score = Dist * DistanceWeightValue.Value + AngleOffset * AngleWeightValue.Value
       if HealthWeightValue.Value ~= 0 then
         Score += GetHealthOfPlayer(Player) * HealthWeightValue.Value
       end
