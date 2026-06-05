@@ -133,7 +133,7 @@ return (function()
 
   return Fly
 end)()
--- Fly = loadstring(game:HttpGet("https://pastebin.com/raw/26dUawd3"))()
+-- Fly = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/fly.lua"))()
 
 -- SetEnabled(bool) / Enable / Disable
 -- ChangeSpeed(number | (number) -> number) / SetForce(number)
