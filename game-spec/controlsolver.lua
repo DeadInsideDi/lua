@@ -127,7 +127,7 @@ return (function()
 
   return Solver
 end)()
--- Solver = loadstring(game:HttpGet("https://pastebin.com/raw/NNBQz2gQ"))()
+-- Solver = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/game-spec/controlsolver.lua"))()
 
 -- SolveSequence(Controller) / SolveWirePanel(Controller)
 -- SolveMemory(Controller) / SolveHoldPressure(Controller)
