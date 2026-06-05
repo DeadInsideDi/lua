@@ -154,7 +154,7 @@ return (function()
 
   return Aim
 end)()
--- Aim = loadstring(game:HttpGet("https://pastebin.com/raw/..."))()
+-- Aim = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/aim.lua"))()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
 -- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
