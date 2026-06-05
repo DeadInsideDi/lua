@@ -126,7 +126,7 @@ return (function()
 
   return Chams
 end)()
--- Chams = loadstring(game:HttpGet("https://pastebin.com/raw/S4aLJz38"))()
+-- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/chams.lua"))()
 
 -- EnableAllProfiles / DisableAllProfiles / CreateChamProfile -V-
 -- Add(Instance) / Remove(Instance) / Clear
