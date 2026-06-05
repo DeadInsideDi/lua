@@ -59,7 +59,8 @@ return (function()
     local CameraCFrame = Camera.CFrame
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
     Camera.CameraType = Enum.CameraType.Scriptable
-    for i = 1, 10 do
+    for i = 1, 100 do
+      task.wait(0.01)
       Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, SpeedValue.Value))
     end
     Camera.CameraType = Enum.CameraType.Custom
