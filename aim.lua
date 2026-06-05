@@ -80,7 +80,8 @@ return (function()
     end
   end
 
-  function Aim.ChoosePlayerToAim(playerList: {Player}): Player
+  function Aim.ChoosePlayerToAim(playerList: {Player}?): Player
+    print("0")
     local PlayersList = playerList or Players:GetPlayers()
     local CameraCFrame = Camera.CFrame
     local BestTarget = nil
