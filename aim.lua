@@ -28,7 +28,7 @@ return (function()
   local TeamCheckValue = FindValueInstance("Bool", "Aim_TeamCheck", false)
   local MaxDistanceValue = FindValueInstance("Number", "Aim_MaxDistance", 5000)
   local MaxAngleValue = FindValueInstance("Number", "Aim_MaxAngle", 180)
-  local DistanceWeightValue = FindValueInstance("Number", "Aim_DistanceWeight", 1.25)
+  local DistanceWeightValue = FindValueInstance("Number", "Aim_DistanceWeight", 0.1)
   local AngleWeightValue = FindValueInstance("Number", "Aim_AngleWeightValue", 1)
   local HealthWeightValue = FindValueInstance("Number", "Aim_HealthWeight", 0)
 
