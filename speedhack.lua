@@ -82,7 +82,7 @@ return (function()
 
   return SpeedHack
 end)()
--- SpeedHack = loadstring(game:HttpGet("https://pastebin.com/raw/38W0vdTM"))()
+-- SpeedHack = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/speedhack.lua"))()
 
 -- SetEnabled(bool) / Enable / Disable
 -- SetBaseSpeed(number) / ChangeSpeed(number | func)
