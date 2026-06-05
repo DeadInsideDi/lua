@@ -85,29 +85,29 @@ return (function()
     local CameraCFrame = Camera.CFrame
     local BestTarget = nil
     local SmallestScore = math.huge
-
+    print("1")
     for _, Player in ipairs(PlayersList) do
       if Player == Client then continue end
       if TeamCheckValue.Value and IsSameTeam(Player) then continue end
 
       local PlayerChar = Player.Character
       if not PlayerChar then continue end
-
+      print("2")
       local Part = GetPartOfModel(PlayerChar)
       if not Part then continue end
-
+      print("3")
       local TargetPos = Part.Position
       local Dist = GetDistance(CameraCFrame.Position, TargetPos)
       if Dist > MaxDistanceValue.Value then continue end
-
+      print("4")
       local AngleOffset = GetAngleOffset(CameraCFrame, TargetPos)
-      if AngleOffset > MaxAngleValue then continue end
-
+      if AngleOffset > MaxAngleValue.Value then continue end
+      print("5")
       local Score = Dist * DistanceWeightValue.Value + AngleOffset * AngleWeightValue.Value
       if HealthWeightValue.Value ~= 0 then
         Score += GetHealthOfPlayer(Player) * HealthWeightValue.Value
       end
-
+      print("6")
       if Score < SmallestScore then
         SmallestScore = Score
         BestTarget = Player
