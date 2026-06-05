@@ -188,6 +188,8 @@ return (function()
 
   return PathFinder
 end)()
+-- PathFinder = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/pathfinder.lua"))()
+
 -- CreatePath({
 --   AgentRadius = 2, AgentHeight = 5, AgentCanJump = true,
 --   AgentCanClimb = false, WaypointSpacing = 1, Costs = {}
