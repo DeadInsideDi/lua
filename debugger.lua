@@ -1,3 +1,4 @@
+
 return (function()
   local Debugger = {}
 
@@ -10,6 +11,11 @@ return (function()
 
   local BillboardedInstances: {[string]: Instance} = {}
   local ScreenLabel: TextLabel
+  local LifeTime = 10
+
+  function Debugger.SetLifeTime(lifeTime: number): ()
+    LifeTime = lifeTime ~= nil and lifeTime or LifeTime
+  end
 
   local function IsCharacterPart(currentPart: Instance): boolean
     while currentPart and currentPart ~= workspace do
@@ -47,6 +53,10 @@ return (function()
       Label.Font = Enum.Font.SciFi
       Label.Text = "Nothing"
     end
+
+    task.delay(LifeTime, function()
+      if Label and Label.Parent then Label:Destroy() end
+    end)
 
     ScreenLabel = Label
     return ScreenLabel
@@ -119,6 +129,11 @@ return (function()
     TextLabel.BackgroundTransparency = 1
     TextLabel.TextScaled = true
     TextLabel.TextColor3 = if color ~= nil then color else GetRandomColor()
+
+    task.delay(LifeTime, function()
+      if Billboard and Billboard.Parent then Billboard:Destroy() end
+    end)
+
     return Billboard
   end
 
@@ -150,10 +165,68 @@ return (function()
     return Name
   end
 
+
+  function Debugger.PrintRootPosition(leaveMark: boolean?): Vector3
+    local Position = Root.Position
+    print(Root.Name, 'at position:', Position)
+    if leaveMark then
+      local Part = Instance.new("Part", workspace)
+      Part.Position = Position
+      Part.Color = GetRandomColor()
+      Part.Size = Vector3(1, 1, 1)
+      Part.CanCollide = false
+      Part.CanQuery = false
+      Part.Anchored = true
+      Part.Transparency = 0.5
+      task.delay(LifeTime, function()
+        if Part and Part.Parent then Part:Destroy() end
+      end)
+    end
+    return Position
+  end
+
+  function Debugger.PrintTable(
+    tableToPrint: table,
+    indent: string?,
+    sortKeys: boolean,
+    sep: string?,
+    keyValueFormat: string?
+  ): string
+    sep = sep ~= nil and sep or ","
+    keyValueFormat = keyValueFormat ~= nil and keyValueFormat or "%*: %*"
+    sortKeys = sortKeys or false
+    indent = indent ~= nil and indent or "    "
+
+    local function Serialize(value: any, lvl: number)
+      if type(value) ~= "table" then return tostring(value) end
+
+      local Keys={} for K in pairs(value) do Keys[#Keys+1]=K end
+      if sortKeys then table.sort(Keys, function(A,B) return tostring(A)<tostring(B) end) end
+
+      local P, Nxt = {}, lvl+1
+      local Pre = indent and string.rep(indent, Nxt) or ""
+
+      for _, Key in ipairs(Keys) do
+        P[#P+1] = Pre..string.format(keyValueFormat, Key, Serialize(value[Key],Nxt))
+      end
+
+      local Inr = table.concat(P, sep)
+      if indent == "" then return "{"..Inr.."}"  end
+      local BPre = string.rep(indent, lvl)
+      return "{\n"..Inr.."\n"..BPre.."}"
+    end
+
+    local serialized_table = Serialize(tableToPrint, 0)
+    print(serialized_table)
+    return serialized_table
+  end
+
+
   return Debugger
 end)()
--- Debugger = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/debugger.lua"))()
+-- Debugger = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/debugger.lua"))()
 
--- FindCloseInstances(number, Instance)
+-- SetLifeTime(number) / FindCloseInstances(number, Instance)
 -- PrintCloseParts(number, Instance) / MarkPrintCloseParts(number, Instance, Color3)
--- ShowNameOfLookedAtPart
+-- ShowNameOfLookedAtPart / PrintRootPosition
+-- PrintTable(table, string, bool, string, string)
