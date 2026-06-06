@@ -79,10 +79,10 @@ return (function()
     local Instances = {}
 
     for _, Ins in ipairs(parent:GetDescendants()) do
-      if IsCharacterPart(Ins) or not (Ins:IsA("BasePart") or Ins:IsA("Model")) then continue end
-      if (GetPositionOfModelOrPart(Ins) - Root.Position).magnitude < distance then
-        table.insert(Instances, Ins)
-      end
+      if not (Ins:IsA("BasePart") or Ins:IsA("Model")) then continue end
+      if (GetPositionOfModelOrPart(Ins) - Root.Position).magnitude > distance then continue end
+      if IsCharacterPart(Ins) then continue end
+      table.insert(Instances, Ins)
     end
 
     return Instances
@@ -192,15 +192,15 @@ return (function()
     sep: string?,
     keyValueFormat: string?
   ): string
-    sep = sep ~= nil and sep or ","
-    keyValueFormat = keyValueFormat ~= nil and keyValueFormat or "%*: %*"
+    sep = sep == nil and "," or sep
+    keyValueFormat = keyValueFormat == nil and "%*: %*" or keyValueFormat
     sortKeys = sortKeys or false
-    indent = indent ~= nil and indent or "    "
+    indent = indent == nil and "    " or indent
 
     local function Serialize(value: any, lvl: number)
       if type(value) ~= "table" then return tostring(value) end
 
-      local Keys={} for K in pairs(value) do Keys[#Keys+1] = K end
+      local Keys={} for K in pairs(value) do Keys[#Keys+1]=K end
       if sortKeys then table.sort(Keys, function(A,B) return tostring(A)<tostring(B) end) end
 
       local P, Nxt = {}, lvl+1
