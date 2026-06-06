@@ -200,7 +200,7 @@ return (function()
     local function Serialize(value: any, lvl: number)
       if type(value) ~= "table" then return tostring(value) end
 
-      local Keys={} for K in pairs(value) do Keys[#Keys+1]=K end
+      local Keys={} for K in pairs(value) do Keys[#Keys+1] = K end
       if sortKeys then table.sort(Keys, function(A,B) return tostring(A)<tostring(B) end) end
 
       local P, Nxt = {}, lvl+1
