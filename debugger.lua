@@ -173,7 +173,7 @@ return (function()
       local Part = Instance.new("Part", workspace)
       Part.Position = Position
       Part.Color = GetRandomColor()
-      Part.Size = Vector3(1, 1, 1)
+      Part.Size = Vector3.new(1, 1, 1)
       Part.CanCollide = false
       Part.CanQuery = false
       Part.Anchored = true
