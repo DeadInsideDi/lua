@@ -34,6 +34,7 @@ return (function()
     RunService:BindToRenderStep("Boost", Enum.RenderPriority.Character.Value, function(dt)
       if Humanoid == nil then return end
       local Dir = Humanoid.MoveDirection
+      print(TargetSpeed)
       if Dir.Magnitude > 0 then Character:TranslateBy(TargetSpeed * dt * Dir) end
     end)
   end
