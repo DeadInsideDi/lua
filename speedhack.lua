@@ -25,22 +25,20 @@ return (function()
   end
 
   local EnabledValue = FindValueInstance("Bool", "SpeedHack_Enabled", false)
-  local BaseSpeedValue = FindValueInstance("Number", "SpeedHack_BaseSpeed", 0)
   local SpeedValue = FindValueInstance("Number", "SpeedHack_Speed", 20)
 
   local function UpdateSpeed()
-    local TargetSpeed = EnabledValue.Value and SpeedValue.Value or BaseSpeedValue.Value
+    if not EnabledValue.Value then return end
 
     RunService:UnbindFromRenderStep("Boost")
     RunService:BindToRenderStep("Boost", Enum.RenderPriority.Character.Value, function(dt)
       if Humanoid == nil then return end
       local Dir = Humanoid.MoveDirection
-      if Dir.Magnitude > 0 then Character:TranslateBy(TargetSpeed * dt * Dir) end
+      if Dir.Magnitude > 0 then Character:TranslateBy(SpeedValue.Value * dt * Dir) end
     end)
   end
 
   EnabledValue.Changed:Connect(UpdateSpeed)
-  BaseSpeedValue.Changed:Connect(UpdateSpeed)
   SpeedValue.Changed:Connect(UpdateSpeed)
 
   function SpeedHack.SetEnabled(value: boolean): ()
@@ -53,14 +51,6 @@ return (function()
 
   function SpeedHack.Disable(): ()
     SpeedHack.SetEnabled(false)
-  end
-
-  function SpeedHack.ChangeBaseSpeed(numberOrFunc: number | (number) -> number): ()
-    if type(numberOrFunc) == "function" then
-      BaseSpeedValue.Value = numberOrFunc(BaseSpeedValue.Value) or BaseSpeedValue.Value
-    else
-      BaseSpeedValue.Value = numberOrFunc or BaseSpeedValue.Value
-    end
   end
 
   function SpeedHack.ChangeSpeed(numberOrFunc: number | (number) -> number): ()
@@ -82,7 +72,7 @@ return (function()
 
   return SpeedHack
 end)()
--- SpeedHack = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/speedhack.lua"))()
+-- SpeedHack = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/speedhack.lua"))()
 
 -- SetEnabled(bool) / Enable / Disable
--- SetBaseSpeed(number) / ChangeSpeed(number | func)
+-- ChangeSpeed(number | func)
