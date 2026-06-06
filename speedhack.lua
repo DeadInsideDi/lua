@@ -28,13 +28,13 @@ return (function()
   local SpeedValue = FindValueInstance("Number", "SpeedHack_Speed", 20)
 
   local function UpdateSpeed()
-    RunService:UnbindFromRenderStep("Boost")
-    if not EnabledValue.Value then return end
+    local TargetSpeed = EnabledValue.Value and SpeedValue.Value or 0
 
+    RunService:UnbindFromRenderStep("Boost")
     RunService:BindToRenderStep("Boost", Enum.RenderPriority.Character.Value, function(dt)
       if Humanoid == nil then return end
       local Dir = Humanoid.MoveDirection
-      if Dir.Magnitude > 0 then Character:TranslateBy(SpeedValue.Value * dt * Dir) end
+      if Dir.Magnitude > 0 then Character:TranslateBy(TargetSpeed * dt * Dir) end
     end)
   end
 
@@ -74,5 +74,4 @@ return (function()
 end)()
 -- SpeedHack = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/speedhack.lua"))()
 
--- SetEnabled(bool) / Enable / Disable
--- ChangeSpeed(number | func)
+-- SetEnabled(bool) / Enable / Disable / ChangeSpeed(number | func)
