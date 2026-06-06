@@ -28,9 +28,9 @@ return (function()
   local SpeedValue = FindValueInstance("Number", "SpeedHack_Speed", 20)
 
   local function UpdateSpeed()
+    RunService:UnbindFromRenderStep("Boost")
     if not EnabledValue.Value then return end
 
-    RunService:UnbindFromRenderStep("Boost")
     RunService:BindToRenderStep("Boost", Enum.RenderPriority.Character.Value, function(dt)
       if Humanoid == nil then return end
       local Dir = Humanoid.MoveDirection
