@@ -1,21 +1,14 @@
-
 return (function()
   local Debugger = {}
 
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
   local PlayerGui = Client:WaitForChild("PlayerGui")
-  local Character = Client.Character or Client.CharacterAdded:Wait()
-  local Root = Character:WaitForChild("HumanoidRootPart")
   local Camera = workspace.CurrentCamera
 
   local BillboardedInstances: {[string]: Instance} = {}
   local ScreenLabel: TextLabel
   local LifeTime = 10
-
-  function Debugger.SetLifeTime(lifeTime: number): ()
-    LifeTime = lifeTime ~= nil and lifeTime or LifeTime
-  end
 
   local function IsCharacterPart(currentPart: Instance): boolean
     while currentPart and currentPart ~= workspace do
@@ -80,7 +73,7 @@ return (function()
 
     for _, Ins in ipairs(parent:GetDescendants()) do
       if not (Ins:IsA("BasePart") or Ins:IsA("Model")) then continue end
-      if (GetPositionOfModelOrPart(Ins) - Root.Position).magnitude > distance then continue end
+      if (GetPositionOfModelOrPart(Ins) - Camera.Focus.Position).Magnitude > distance then continue end
       if IsCharacterPart(Ins) then continue end
       table.insert(Instances, Ins)
     end
@@ -153,7 +146,7 @@ return (function()
     local RayParams = RaycastParams.new()
     RayParams.FilterType = Enum.RaycastFilterType.Exclude
 
-    if Character then RayParams.FilterDescendantsInstances = {Character} end
+    if Client.Character then RayParams.FilterDescendantsInstances = {Client.Character} end
 
     local CameraCFrame = Camera.CFrame
     local Origin = CameraCFrame.Position
@@ -166,9 +159,9 @@ return (function()
   end
 
 
-  function Debugger.PrintRootPosition(leaveMark: boolean?): Vector3
-    local Position = Root.Position
-    print(Root.Name, 'at position:', Position)
+  function Debugger.PrintCameraPosition(leaveMark: boolean?): Vector3
+    local Position = Camera.Focus.Position
+    print('Camera at position:', Position)
     if leaveMark then
       local Part = Instance.new("Part", workspace)
       Part.Position = Position
@@ -221,12 +214,17 @@ return (function()
     return serialized_table
   end
 
+  function Debugger.SetLifeTime(value: number): ()
+    LifeTime = type(value) == "number" and value or LifeTime
+  end
 
   return Debugger
 end)()
+
 -- Debugger = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/debugger.lua"))()
 
--- SetLifeTime(number) / FindCloseInstances(number, Instance)
+-- FindCloseInstances(number, Instance)
 -- PrintCloseParts(number, Instance) / MarkPrintCloseParts(number, Instance, Color3)
--- ShowNameOfLookedAtPart / PrintRootPosition
+-- ShowNameOfLookedAtPart / PrintCameraPosition
 -- PrintTable(table, string, bool, string, string)
+-- SetLifeTime(number)
