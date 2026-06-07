@@ -16,9 +16,9 @@ return (function()
 
     VirtualInputManager:SendMouseMoveEvent(TargetX, TargetY, game)
     task.wait(InputTimeInterval)
-    VirtualInputManager:SendMouseButtonEvent(TargetX, TargetY, 0, true, game, 1)
+    VirtualInputManager:SendMouseButtonEvent(TargetX, TargetY, 0, true, game, 0)
     task.wait(InputTimeInterval)
-    VirtualInputManager:SendMouseButtonEvent(TargetX, TargetY, 0, false, game, 1)
+    VirtualInputManager:SendMouseButtonEvent(TargetX, TargetY, 0, false, game, 0)
     task.wait(InputTimeInterval)
   end
 
@@ -37,7 +37,7 @@ return (function()
 
   return Controller
 end)()
--- Controller = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/controller.lua"))()
+-- Controller = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/controller.lua"))()
 
 -- click(number, number, withInset=True) / clickGui(GuiObject)
 -- tap(Enum.KeyCode)
