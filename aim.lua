@@ -76,6 +76,7 @@ return (function()
     VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
   end
 
+  Aim.AimToPosition = UseVirtualMouseValue.Value and AimToPositionVirtualMouse or AimToPositionCFrame
   UseVirtualMouseValue.Changed:Connect(function(value)
     Aim.AimToPosition = value and AimToPositionVirtualMouse or AimToPositionCFrame
   end)
