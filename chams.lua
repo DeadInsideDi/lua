@@ -14,7 +14,7 @@ return (function()
     return Value
   end
 
-  function Chams.CreateChamProfile()
+  function Chams.CreateCham()
     local PName = "Profile_"..tostring(#Profiles)
     local Profile = {}
     local ManagedTargets: {[Instance]: Highlight} = {}
@@ -128,7 +128,7 @@ return (function()
 end)()
 -- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/chams.lua"))()
 
--- EnableAll / DisableAll / CreateChamProfile -V-
+-- EnableAll / DisableAll / CreateCham -V-
 -- Add(Instance) / Remove(Instance) / Clear
 -- SetEnabled(bool) / Enable / Disable
 -- SetFillColor(Color3) / SetFillTransparency(number)
