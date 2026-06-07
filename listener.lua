@@ -147,5 +147,6 @@ return (function()
 end)()
 -- Flex = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/listener.lua"))()
 
--- CreateHoldToggle / CreateToggle
--- BindKey / UnbindKey / UnbindAll
+-- CreateHoldToggle((table) -> boolean?, (table) -> boolean?, (table) -> boolean?, boolean?)
+-- CreateToggle((table) -> boolean?, (table) -> boolean?, (table) -> boolean?, boolean?)
+-- (BindKey | UnbindKey)(Enum.KeyCode, (table) -> boolean?) / UnbindAll
