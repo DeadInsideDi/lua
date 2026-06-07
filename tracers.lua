@@ -17,7 +17,7 @@ return (function()
   CameraAttachment.Name = "Tracers_Attachment"
 
   RunService:UnbindFromRenderStep("ChangeCameraPartPos")
-  RunService:BindToRenderStep("ChangeCameraPartPos", Enum.RenderPriority.Character, function()
+  RunService:BindToRenderStep("ChangeCameraPartPos", Enum.RenderPriority.Character.Value, function()
     CameraPart.Position = Camera.Focus.Position
   end)
 
