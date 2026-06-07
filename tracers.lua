@@ -2,12 +2,25 @@ return (function()
   local Tracers = {}
   local Profiles = {}
 
+  local RunService = game:GetService("RunService")
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
-  local Character = Client.Character or Client.CharacterAdded:Wait()
-  local Root = Character:WaitForChild("HumanoidRootPart")
-  local RootAttachment = Root:FindFirstChild("Tracers_Attachment") or Instance.new("Attachment", Root)
-  RootAttachment.Name = "Tracers_Attachment"
+  local Camera = workspace.CurrentCamera
+
+  local CameraPart = Camera:FindFirstChild("Tracers_CameraPart") or Instance.new("Part", Camera)
+  CameraPart.Name = "Tracers_CameraPart"
+  CameraPart.Anchored = true
+  CameraPart.CanCollide = false
+  -- CameraPart.Transparency = 1
+  CameraPart.Size = Vector3.new(0.1, 0.1, 0.1)
+  local CameraAttachment = CameraPart:FindFirstChild("Tracers_Attachment") or Instance.new("Attachment", CameraPart)
+  CameraAttachment.Name = "Tracers_Attachment"
+
+  RunService:UnbindFromRenderStep("ChangeCameraPartPos")
+  RunService:BindToRenderStep("ChangeCameraPartPos", Enum.RenderPriority.Character, function()
+    CameraPart.Position = Camera.Focus.Position
+  end)
+
 
   for _, Connection in ipairs(getgenv().TRACERS_RBX_CONNECTIONS or {}) do
     Connection:Disconnect()
@@ -29,7 +42,7 @@ return (function()
   TracerFolder = Instance.new("Folder", workspace)
   TracerFolder.Name = "Tracers_Folder"
 
-  function Tracers.CreateTracerProfile()
+  function Tracers.CreateTracer()
     local PName = "Profile_"..tostring(#Profiles)
     local Profile = {}
     local ManagedTargets: {[Instance]: Beam} = {}
@@ -59,9 +72,6 @@ return (function()
 
     function Profile.UpdateAllStyles()
       for Target, Beam in pairs(ManagedTargets) do
-        if Beam.Attachment0 ~= RootAttachment then
-          Beam.Attachment0 = RootAttachment
-        end
         if Target.Parent and Beam.Parent then
           ApplyStyle(Beam)
         else
@@ -91,7 +101,7 @@ return (function()
       if not TargetPart then return end
 
       local Beam = Instance.new("Beam", TracerFolder)
-      Beam.Attachment0 = RootAttachment
+      Beam.Attachment0 = CameraAttachment
       Beam.Attachment1 = Instance.new("Attachment", TargetPart)
       Beam.FaceCamera = true
 
@@ -189,23 +199,13 @@ return (function()
     return Profile
   end
 
-  table.insert(getgenv().TRACERS_RBX_CONNECTIONS, Client.CharacterAdded:Connect(function(newCharacter)
-    Character = newCharacter
-    Root = Character:WaitForChild("HumanoidRootPart")
-    RootAttachment = Instance.new("Attachment", Root)
-    RootAttachment.Name = "Tracers_Attachment"
-    for _, Profile in ipairs(Profiles) do
-      Profile.UpdateAllStyles()
-    end
-  end))
-
-  function Tracers.EnableAllProfiles(): ()
+  function Tracers.EnableAll(): ()
     for _, Profile in pairs(Profiles) do
       Profile.SetEnabled(true)
     end
   end
 
-  function Tracers.DisableAllProfiles(): ()
+  function Tracers.DisableAll(): ()
     for _, Profile in pairs(Profiles) do
       Profile.SetEnabled(false)
     end
@@ -213,9 +213,9 @@ return (function()
 
   return Tracers
 end)()
--- Tracers = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/tracers.lua"))()
+-- Tracers = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/tracers.lua"))()
 
--- EnableAllProfiles / DisableAllProfiles / CreateTracerProfile -V-
+-- EnableAll / DisableAll / CreateTracer -V-
 -- AddInstance(Instance) / AddPosition(Vector3) / AddPlayer(Player)
 -- Remove(Instance) / Clear
 -- SetEnabled(bool) / Enable / Disable
