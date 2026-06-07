@@ -94,31 +94,31 @@ return (function()
     end
 
     function Profile.SetFillColor(color3: Color3): ()
-      FillColorValue.Value = color3 == nil and FillColorValue.Value or color3
+      FillColorValue.Value = typeof(color3) == "Color3" and color3 or FillColorValue.Value
     end
 
     function Profile.SetFillTransparency(value: number): ()
-      FillTransValue.Value = value == nil and FillTransValue.Value or value
+      FillTransValue.Value = type(value) == "number" and value or FillTransValue.Value
     end
 
     function Profile.SetOutlineColor(color3: Color3): ()
-      OutlineColorValue.Value = color3 == nil and OutlineColorValue.Value or color3
+      OutlineColorValue.Value = typeof(color3) == "Color3" and color3 or OutlineColorValue.Value
     end
 
     function Profile.SetOutlineTransparency(value: number): ()
-      OutlineTransValue.Value = value == nil and OutlineTransValue.Value or value
+      OutlineTransValue.Value = type(value) == "number" and value or OutlineTransValue.Value
     end
 
     return Profile
   end
 
-  function Chams.EnableAllProfiles(): ()
+  function Chams.EnableAll(): ()
     for _, Profile in pairs(Profiles) do
       Profile.SetEnabled(true)
     end
   end
 
-  function Chams.DisableAllProfiles(): ()
+  function Chams.DisableAll(): ()
     for _, Profile in pairs(Profiles) do
       Profile.SetEnabled(false)
     end
@@ -126,9 +126,9 @@ return (function()
 
   return Chams
 end)()
--- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/chams.lua"))()
+-- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/chams.lua"))()
 
--- EnableAllProfiles / DisableAllProfiles / CreateChamProfile -V-
+-- EnableAll / DisableAll / CreateChamProfile -V-
 -- Add(Instance) / Remove(Instance) / Clear
 -- SetEnabled(bool) / Enable / Disable
 -- SetFillColor(Color3) / SetFillTransparency(number)
