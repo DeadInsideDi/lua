@@ -11,8 +11,8 @@ return (function()
   CameraPart.Name = "Tracers_CameraPart"
   CameraPart.Anchored = true
   CameraPart.CanCollide = false
-  -- CameraPart.Transparency = 1
-  CameraPart.Size = Vector3.new(0.1, 0.1, 0.1)
+  CameraPart.Transparency = 1
+  CameraPart.Size = Vector3.new(0.01, 0.01, 0.01)
   local CameraAttachment = CameraPart:FindFirstChild("Tracers_Attachment") or Instance.new("Attachment", CameraPart)
   CameraAttachment.Name = "Tracers_Attachment"
 
