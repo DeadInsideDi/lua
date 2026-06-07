@@ -72,8 +72,8 @@ return (function()
     local pitchDiff = math.asin(Look.Y) - math.asin(Dir.Y)
     local Sensitivity = UserGameSettings.MouseSensitivity / Speed
 
-    local DeltaX = YawDiff / Sensitivity * ROTATION_SPEED_MOUSE.X
-    local DeltaY = pitchDiff / Sensitivity * ROTATION_SPEED_MOUSE.Y
+    local DeltaX = YawDiff / ROTATION_SPEED_MOUSE.X / Sensitivity
+    local DeltaY = pitchDiff / ROTATION_SPEED_MOUSE.Y / Sensitivity
     VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
   end
 
