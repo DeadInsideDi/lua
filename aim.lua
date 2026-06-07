@@ -69,7 +69,7 @@ return (function()
 
     local YawDiff = (math.atan2(Look.X, Look.Z) - math.atan2(Dir.X, Dir.Z) + math.pi) % (2 * math.pi) - math.pi
     local pitchDiff = math.asin(Look.Y) - math.asin(Dir.Y)
-    local Sensitivity = math.rad(UserGameSettings.MouseSensitivity) * Speed
+    local Sensitivity = math.rad(UserGameSettings.MouseSensitivity) / Speed
 
     local DeltaX = YawDiff / Sensitivity / 0.5
     local DeltaY = pitchDiff / Sensitivity / 0.385
@@ -177,6 +177,7 @@ end)()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
 -- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
+-- SetUseVirtualMouse(bool)
 -- SetSpeed(number) / SetAimPart(string) / SetTeamCheck(bool)
 -- SetMaxDistance(number) / SetMaxAngle(number)
 -- SetDistanceWeight(number) / SetAngleWeight(number) / SetHealthWeight(number)
