@@ -1,10 +1,11 @@
 return (function()
   local Aim = {}
 
+  local VirtualInputManager = game:GetService("VirtualInputManager")
+  local UserGameSettings = UserSettings():GetService("UserGameSettings")
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
-  local Character = Client.Character or Client.CharacterAdded:Wait()
 
   for _, Connection in ipairs(getgenv().AIM_RBX_CONNECTIONS or {}) do
     Connection:Disconnect()
@@ -23,18 +24,19 @@ return (function()
     return Value
   end
 
-  local SpeedValue = FindValueInstance("Number", "Aim_Speed", 0.5)
-  local AimPartValue = FindValueInstance("String", "Aim_AimPart", "HumanoidRootPart")
-  local TeamCheckValue = FindValueInstance("Bool", "Aim_TeamCheck", false)
-  local MaxDistanceValue = FindValueInstance("Number", "Aim_MaxDistance", 5000)
-  local MaxAngleValue = FindValueInstance("Number", "Aim_MaxAngle", 180)
-  local DistanceWeightValue = FindValueInstance("Number", "Aim_DistanceWeight", 0.1)
-  local AngleWeightValue = FindValueInstance("Number", "Aim_AngleWeightValue", 1)
-  local HealthWeightValue = FindValueInstance("Number", "Aim_HealthWeight", 0)
+  local UseVirtualMouseValue = FindValueInstance("Bool", "Aim_UseVirtualMouse", true)
+  local Speed = 0.5
+  local AimPart = "HumanoidRootPart"
+  local TeamCheck = false
+  local MaxDistance = 5000
+  local MaxAngle = 180
+  local DistanceWeight = 0.1
+  local AngleWeight = 1
+  local HealthWeight = 0
 
-  local function GetAngleOffset(cameraCFrame: CFrame, targetPos: Vector3): number
-    local Dir = (targetPos - cameraCFrame.Position).Unit
-    local Dot = cameraCFrame.LookVector:Dot(Dir)
+  local function GetAngleOffset(targetPos: Vector3): number
+    local Dir = (targetPos - Camera.Focus.Position).Unit
+    local Dot = Camera.CFrame.LookVector:Dot(Dir)
     return math.deg(math.acos(math.clamp(Dot, -1, 1)))
   end
 
@@ -52,14 +54,31 @@ return (function()
   end
 
   local function GetPartOfModel(model: Model): Instance
-    return model:FindFirstChild(AimPartValue.Value) or model.PrimaryPart or model:FindFirstChildOfClass("BasePart")
+    return model:FindFirstChild(AimPart) or model.PrimaryPart or model:FindFirstChildOfClass("BasePart")
   end
 
-  function Aim.AimToPosition(position: Vector3): ()
+  local function AimToPositionCFrame(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
-    Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, SpeedValue.Value))
+    Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, Speed))
   end
+
+  local function AimToPositionVirtualMouse(targetPos: Vector3): ()
+    local Look = Camera.CFrame.LookVector
+    local Dir = (targetPos - Camera.Focus.Position).Unit
+
+    local YawDiff = (math.atan2(Look.X, Look.Z) - math.atan2(Dir.X, Dir.Z) + math.pi) % (2 * math.pi) - math.pi
+    local pitchDiff = math.asin(Look.Y) - math.asin(Dir.Y)
+    local Sensitivity = math.rad(UserGameSettings.MouseSensitivity) * Speed
+
+    local DeltaX = YawDiff / Sensitivity / 0.5
+    local DeltaY = pitchDiff / Sensitivity / 0.385
+    VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
+  end
+
+  UseVirtualMouseValue.Changed:Connect(function(value)
+    Aim.AimToPosition = value and AimToPositionVirtualMouse or AimToPositionCFrame
+  end)
 
   function Aim.AimToInstance(target: Model | Part): ()
     local Position
@@ -87,7 +106,7 @@ return (function()
 
     for _, Player in ipairs(PlayersList) do
       if Player == Client then continue end
-      if TeamCheckValue.Value and IsSameTeam(Player) then continue end
+      if TeamCheck and IsSameTeam(Player) then continue end
 
       local PlayerChar = Player.Character
       if not PlayerChar then continue end
@@ -97,14 +116,14 @@ return (function()
 
       local TargetPos = Part.Position
       local Dist = GetDistance(CameraCFrame.Position, TargetPos)
-      if Dist > MaxDistanceValue.Value then continue end
+      if Dist > MaxDistance then continue end
 
       local AngleOffset = GetAngleOffset(CameraCFrame, TargetPos)
-      if AngleOffset > MaxAngleValue.Value then continue end
+      if AngleOffset > MaxAngle then continue end
 
-      local Score = Dist * DistanceWeightValue.Value + AngleOffset * AngleWeightValue.Value
-      if HealthWeightValue.Value ~= 0 then
-        Score += GetHealthOfPlayer(Player) * HealthWeightValue.Value
+      local Score = Dist * DistanceWeight + AngleOffset * AngleWeight
+      if HealthWeight ~= 0 then
+        Score += GetHealthOfPlayer(Player) * HealthWeight
       end
 
       if Score < SmallestScore then
@@ -115,41 +134,41 @@ return (function()
     return BestTarget
   end
 
+  function Aim.SetUseVirtualMouse(value: boolean): ()
+    UseVirtualMouseValue.Value = value or false
+  end
+
   function Aim.SetSpeed(value: number): ()
-    SpeedValue.Value = value == nil and SpeedValue.Value or value
+    Speed = math.clamp(type(value) == "number" and value or Speed, 0.01, 1)
   end
 
   function Aim.SetAimPart(value: string): ()
-    AimPartValue.Value = value == nil and AimPartValue.Value or value
+    AimPart = type(value) == "string" and value or AimPart
   end
 
   function Aim.SetTeamCheck(value: boolean): ()
-    TeamCheckValue.Value = value == nil and TeamCheckValue.Value or value
+    TeamCheck = value or false
   end
 
   function Aim.SetMaxDistance(value: number): ()
-    MaxDistanceValue.Value = value == nil and MaxDistanceValue.Value or value
+    MaxDistance = type(value) == "number" and value or MaxDistance
   end
 
   function Aim.SetMaxAngle(value: number): ()
-    MaxAngleValue.Value = value == nil and MaxAngleValue.Value or value
+    MaxAngle = type(value) == "number" and value or MaxAngle
   end
 
   function Aim.SetDistanceWeight(value: number): ()
-    DistanceWeightValue.Value = value == nil and DistanceWeightValue.Value or value
+    DistanceWeight = type(value) == "number" and value or DistanceWeight
   end
 
   function Aim.SetAngleWeight(value: number): ()
-    AngleWeightValue.Value = value == nil and AngleWeightValue.Value or value
+    AngleWeight = type(value) == "number" and value or AngleWeight
   end
 
   function Aim.SetHealthWeight(value: number): ()
-    HealthWeightValue.Value = value == nil and HealthWeightValue.Value or value
+    HealthWeight = type(value) == "number" and value or HealthWeight
   end
-
-  table.insert(getgenv().AIM_RBX_CONNECTIONS, Client.CharacterAdded:Connect(function(NewChar)
-    Character = NewChar
-  end))
 
   return Aim
 end)()
