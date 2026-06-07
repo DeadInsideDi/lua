@@ -74,7 +74,6 @@ return (function()
 
     local DeltaX = YawDiff / (Sensitivity * ROTATION_SPEED_MOUSE.X)
     local DeltaY = pitchDiff / (Sensitivity * ROTATION_SPEED_MOUSE.Y)
-    print('>',DeltaX, DeltaY)
     VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
   end
 
