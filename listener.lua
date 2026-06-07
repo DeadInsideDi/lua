@@ -89,23 +89,29 @@ return (function()
     return ToggleInstance
   end
 
-  function Listener.BindKey(key: Enum.KeyCode, toggle: ToggleFunction): ()
+  function Listener.BindKey(key: Enum.KeyCode, toggle: Toggle | ToggleFunction): ()
     if not Binds[key] then Binds[key] = {} end
+    if type(toggle) == "function" then
+      toggle = Listener.CreateHoldToggle(toggle)
+    end
     table.insert(Binds[key], toggle)
   end
 
-  function Listener.UnbindKey(key: Enum.KeyCode, toggle: ToggleFunction): ()
+  function Listener.UnbindKey(key: Enum.KeyCode, toggle: Toggle | ToggleFunction): ()
     local KeyList = Binds[key]
     if not KeyList then return end
+    local index
 
-    local index = table.find(KeyList, toggle)
-    if index then
-      table.remove(KeyList, index)
+    if type(toggle) == "function" then
+      for i, v in KeyList do
+        if toggle == v.Cases[true] then index = i break end
+      end
+    else
+      index = table.find(KeyList, toggle)
     end
+    if index then table.remove(KeyList, index) end
 
-    if #KeyList == 0 then
-      Binds[key] = nil
-    end
+    if #KeyList == 0 then Binds[key] = nil end
   end
 
   function Listener.UnbindAll(): ()
@@ -139,7 +145,7 @@ return (function()
 
   return Listener
 end)()
--- Flex = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/listener.lua"))()
+-- Flex = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/listener.lua"))()
 
 -- CreateHoldToggle / CreateToggle
 -- BindKey / UnbindKey / UnbindAll
