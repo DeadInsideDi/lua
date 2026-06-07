@@ -1,6 +1,7 @@
 return (function()
   local Aim = {}
 
+  local ROTATION_SPEED_MOUSE = Vector2.new(1, 0.77)*math.rad(0.5)
   local VirtualInputManager = game:GetService("VirtualInputManager")
   local UserGameSettings = UserSettings():GetService("UserGameSettings")
   local Players = game:GetService("Players")
@@ -69,10 +70,10 @@ return (function()
 
     local YawDiff = (math.atan2(Look.X, Look.Z) - math.atan2(Dir.X, Dir.Z) + math.pi) % (2 * math.pi) - math.pi
     local pitchDiff = math.asin(Look.Y) - math.asin(Dir.Y)
-    local Sensitivity = math.rad(UserGameSettings.MouseSensitivity) / Speed
+    local Sensitivity = UserGameSettings.MouseSensitivity / Speed
 
-    local DeltaX = YawDiff / Sensitivity / 0.5
-    local DeltaY = pitchDiff / Sensitivity / 0.385
+    local DeltaX = YawDiff / Sensitivity * ROTATION_SPEED_MOUSE.X
+    local DeltaY = pitchDiff / Sensitivity * ROTATION_SPEED_MOUSE.Y
     VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
   end
 
