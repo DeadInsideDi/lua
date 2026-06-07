@@ -4,8 +4,7 @@ return (function()
   local PathfindingService = game:GetService("PathfindingService")
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
-  local Character = Client.Character or Client.CharacterAdded:Wait()
-  local Root = Character:WaitForChild("HumanoidRootPart")
+  local Camera = workspace.CurrentCamera
 
   local RouteFolder = workspace:FindFirstChild("ActiveRoutes")
   if RouteFolder ~= nil then RouteFolder:Destroy() end
@@ -49,7 +48,7 @@ return (function()
   end
 
   local function ComputePathWithFallback(path: Path, startPos: Vector3, baseTarget: Vector3)
-    local MaxAttempts, CurrentAttempt = 25, 0
+    local MaxAttempts, CurrentAttempt = 10, 0
     local StepSize, HeightStep = 4, 3
 
     local x, z, dx, dz = 0, 0, 0, -1
@@ -93,17 +92,15 @@ return (function()
     local ActiveTrack = ActiveTracks[targetPos]
     local Settings = ActiveTrack.Settings
     task.wait(Settings.UpdateTime)
+    local CameraPos = Camera.Focus.Position
 
-    if not Root or not Root.Parent then return true end
-    local PlayerPos = Root.Position
-
-    if Settings.MinDistance > (PlayerPos - targetPos).Magnitude then
+    if Settings.MinDistance > (CameraPos - targetPos).Magnitude then
       for _, Part in ipairs(ActiveTrack.Parts) do Part:Destroy() end
       ActiveTracks[targetPos] = nil
       return true
     end
 
-    local HasPath = ComputePathWithFallback(path, PlayerPos, targetPos)
+    local HasPath = ComputePathWithFallback(path, CameraPos, targetPos)
     if not HasPath then return end
 
     local Waypoints = path:GetWaypoints()
@@ -112,7 +109,7 @@ return (function()
     local NewParts = {}
 
     for Index, Waypoint in ipairs(Waypoints) do
-      local PartDistance = (Waypoint.Position - PlayerPos).Magnitude
+      local PartDistance = (Waypoint.Position - CameraPos).Magnitude
       if PartDistance < Settings.MinDistance then return end
 
       local Part = Instance.new("Part", RouteFolder)
@@ -188,7 +185,7 @@ return (function()
 
   return PathFinder
 end)()
--- PathFinder = loadstring(game:HttpGet("https://github.com/DeadInsideDi/lua/raw/refs/heads/main/pathfinder.lua"))()
+-- PathFinder = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/pathfinder.lua"))()
 
 -- CreatePath({
 --   AgentRadius = 2, AgentHeight = 5, AgentCanJump = true,
