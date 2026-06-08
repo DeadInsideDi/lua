@@ -108,6 +108,7 @@ return (function()
   RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
   RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value, function()
     Root = FindCharacterModel()
+    print(Root, Root:GetFullName())
     Humanoid = Root:FindFirstChildOfClass("Humanoid")
   end)
 
