@@ -16,16 +16,17 @@ return (function()
   if not getgenv().CreateCustomValue then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
   end
+  local CreateValue = getgenv().CreateCustomValue
 
-  Aim.UseVirtualMouse = getgenv().CreateCustomValue(true)
-  Aim.Speed = 0.5
-  Aim.AimPart = "HumanoidRootPart"
-  Aim.TeamCheck = false
-  Aim.MaxDistance = 5000
-  Aim.MaxAngle = 180
-  Aim.DistanceWeight = 0.1
-  Aim.AngleWeight = 1
-  Aim.HealthWeight = 0
+  Aim.UseVirtualMouse = CreateValue(true)
+  Aim.Speed = CreateValue(0.5)
+  Aim.AimPart = CreateValue("HumanoidRootPart")
+  Aim.TeamCheck = CreateValue(false)
+  Aim.MaxDistance = CreateValue(5000)
+  Aim.MaxAngle = CreateValue(180)
+  Aim.DistanceWeight = CreateValue(0.1)
+  Aim.AngleWeight = CreateValue(1)
+  Aim.HealthWeight = CreateValue(0)
 
   local function GetAngleOffset(targetPos: Vector3): number
     local Dir = (targetPos - Camera.Focus.Position).Unit
