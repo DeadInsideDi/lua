@@ -2,17 +2,12 @@ return (function()
   local Chams = {}
   local Profiles = {}
 
-  local function FindValueInstance(vtype: string, name: string, value: any)
-    local Value = script:FindFirstChild(name)
+  local CoreGui = game:GetService("CoreGui")
 
-    if Value == nil then
-      Value = Instance.new(vtype.."Value", script)
-      Value.Name = name
-      Value.Value = value
-    end
-
-    return Value
+  if not getgenv().CreateCustomValue then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
   end
+  local CreateValue = getgenv().CreateCustomValue
 
   function Chams.CreateCham()
     local PName = "Profile_"..tostring(#Profiles)
@@ -20,18 +15,12 @@ return (function()
     local ManagedTargets: {[Instance]: Highlight} = {}
     table.insert(Profiles, Profile)
 
-    local EnabledValue = FindValueInstance("Bool", "Chams_"..PName.."_Enabled", false)
-    local FillColorValue = FindValueInstance("Color3", "Chams_"..PName.."_FillColor", Color3.fromRGB(255, 0, 0))
-    local FillTransValue = FindValueInstance("Number", "Chams_"..PName.."_FillTransparency", 0.75)
-    local OutlineColorValue = FindValueInstance("Color3", "Chams_"..PName.."_OutlineColor", Color3.fromRGB(255, 255, 255))
-    local OutlineTransValue = FindValueInstance("Number", "Chams_"..PName.."_OutlineTransparency", 0.25)
-
     local function ApplyStyle(highlight: Highlight)
-      highlight.Enabled = EnabledValue.Value
-      highlight.FillColor = FillColorValue.Value
-      highlight.FillTransparency = FillTransValue.Value
-      highlight.OutlineColor = OutlineColorValue.Value
-      highlight.OutlineTransparency = OutlineTransValue.Value
+      highlight.Enabled = Profile.Enabled.Value
+      highlight.FillColor = Profile.FillColor.Value
+      highlight.FillTransparency = Profile.FillTrans.Value
+      highlight.OutlineColor = Profile.OutlineColor.Value
+      highlight.OutlineTransparency = Profile.OutlineTrans.Value
     end
 
     local function UpdateAllStyles()
@@ -44,32 +33,41 @@ return (function()
       end
     end
 
-    EnabledValue.Changed:Connect(UpdateAllStyles)
-    FillColorValue.Changed:Connect(UpdateAllStyles)
-    FillTransValue.Changed:Connect(UpdateAllStyles)
-    OutlineColorValue.Changed:Connect(UpdateAllStyles)
-    OutlineTransValue.Changed:Connect(UpdateAllStyles)
+    Profile.Enabled = CreateValue(false, UpdateAllStyles)
+    Profile.FillColor = CreateValue(Color3.fromRGB(255, 0, 0), UpdateAllStyles)
+    Profile.FillTrans = CreateValue(0.75, UpdateAllStyles)
+    Profile.OutlineColor = CreateValue(Color3.fromRGB(255, 255, 255), UpdateAllStyles)
+    Profile.OutlineTrans = CreateValue(0.25, UpdateAllStyles)
 
-    function Profile.Add(partOrModel: Instance): ()
-      if not partOrModel:IsA("Model") and not partOrModel:IsA("BasePart") then return end
+    function Profile.AddInstance(partOrModel: Instance): ()
+      print(#ManagedTargets, 'COUNT !!!!!!!!!!!!!!!!!!!')
+      if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
-      local HName = "ChamsHighlight_"..PName
-      local Highlight = partOrModel:FindFirstChild(HName)
-      if not Highlight then
-        Highlight = Instance.new("Highlight")
-        Highlight.Name = HName
-        Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        Highlight.Parent = partOrModel
-      end
+      local Highlight = Instance.new("Highlight", CoreGui)
+      Highlight.Name = "ChamsHighlight_"..PName
+      Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      Highlight.Adornee = partOrModel
 
       ApplyStyle(Highlight)
       ManagedTargets[partOrModel] = Highlight
     end
 
+    function Profile.AddPlayer(player: Player): ()
+      if player.Character then
+        Profile.AddInstance(player.Character)
+      end
+
+      player.CharacterAdded:Connect(function(character)
+        Profile.AddInstance(character)
+      end)
+      player.CharacterRemoving:Connect(function(character)
+        Profile.Remove(character)
+      end)
+    end
+
     function Profile.Remove(partOrModel: Instance): ()
-      local HName = "ChamsHighlight_"..PName
-      local Highlight = ManagedTargets[partOrModel] or partOrModel:FindFirstChild(HName)
+      local Highlight = ManagedTargets[partOrModel]
       if Highlight then Highlight:Destroy() end
       ManagedTargets[partOrModel] = nil
     end
@@ -81,46 +79,18 @@ return (function()
       table.clear(ManagedTargets)
     end
 
-    function Profile.SetEnabled(value: boolean): ()
-      EnabledValue.Value = value or false
-    end
-
-    function Profile.Enable(): ()
-      Profile.SetEnabled(true)
-    end
-
-    function Profile.Disable(): ()
-      Profile.SetEnabled(false)
-    end
-
-    function Profile.SetFillColor(color3: Color3): ()
-      FillColorValue.Value = typeof(color3) == "Color3" and color3 or FillColorValue.Value
-    end
-
-    function Profile.SetFillTransparency(value: number): ()
-      FillTransValue.Value = type(value) == "number" and value or FillTransValue.Value
-    end
-
-    function Profile.SetOutlineColor(color3: Color3): ()
-      OutlineColorValue.Value = typeof(color3) == "Color3" and color3 or OutlineColorValue.Value
-    end
-
-    function Profile.SetOutlineTransparency(value: number): ()
-      OutlineTransValue.Value = type(value) == "number" and value or OutlineTransValue.Value
-    end
-
     return Profile
   end
 
   function Chams.EnableAll(): ()
     for _, Profile in pairs(Profiles) do
-      Profile.SetEnabled(true)
+      Profile.Enabled = true
     end
   end
 
   function Chams.DisableAll(): ()
     for _, Profile in pairs(Profiles) do
-      Profile.SetEnabled(false)
+      Profile.Enabled = false
     end
   end
 
@@ -129,7 +99,7 @@ end)()
 -- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/chams.lua"))()
 
 -- EnableAll / DisableAll / CreateCham -V-
--- Add(Instance) / Remove(Instance) / Clear
--- SetEnabled(bool) / Enable / Disable
--- SetFillColor(Color3) / SetFillTransparency(number)
--- SetOutlineColor(Color3) / SetOutlineTransparency(number)
+-- AddInstance(Instance) / Remove(Instance) / Clear / AddPlayer(Player)
+
+-- Enabled: bool / FillColor: Color3 / FillTransparency: number
+-- OutlineColor: Color3 / OutlineTransparency: number
