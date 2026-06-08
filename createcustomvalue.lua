@@ -9,6 +9,7 @@ return (function()
     ValueMetaTable.__newindex = function(self, key, new)
         if rawget(self, key) == new then return end
         rawset(self, key, new) if key ~= "Value" then return end
+        print('LISTENER RUNEDs')
         for _, cb in ipairs(rawget(self, "_listeners")) do cb(new) end
     end
     function ValueMetaTable:Changed(cb)
