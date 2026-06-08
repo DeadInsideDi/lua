@@ -40,7 +40,11 @@ return (function()
     Profile.OutlineTrans = CreateValue(0.25, UpdateAllStyles)
 
     function Profile.AddInstance(partOrModel: Instance): ()
-      print(#ManagedTargets, 'COUNT !!!!!!!!!!!!!!!!!!!')
+      local i = 0
+      for k, v in ManagedTargets do
+        i+=1
+      end
+      print(i, 'COUNT !!!!!!!!!!!!!!!!!!!')
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
