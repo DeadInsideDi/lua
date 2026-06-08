@@ -97,6 +97,10 @@ return (function()
     end)
   end
 
+  Fly.Enabled = CreateValue(false, UpdateFly)
+  Fly.Speed = CreateValue(50, UpdateFly)
+  Fly.Force = CreateValue(10000000, UpdateFly)
+
   RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
   RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value * 2, function()
     if Fly.Enabled.Value then
@@ -104,10 +108,6 @@ return (function()
       Humanoid = Root:FindFirstChildOfClass("Humanoid")
     end
   end)
-
-  Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(50, UpdateFly)
-  Fly.Force = CreateValue(10000000, UpdateFly)
 
   return Fly
 end)()
