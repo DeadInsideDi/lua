@@ -3,12 +3,17 @@ return (function()
 
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
-  local PlayerGui = Client:WaitForChild("PlayerGui")
+  local CoreGui = Client:WaitForChild("CoreGui")
   local Camera = workspace.CurrentCamera
 
   local BillboardedInstances: {[string]: Instance} = {}
   local ScreenLabel: TextLabel
-  local LifeTime = 10
+
+  if not getgenv().CreateCustomValue then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
+  end
+
+  Debugger.LifeTime = getgenv().CreateCustomValue(10)
 
   local function IsCharacterPart(currentPart: Instance): boolean
     while currentPart and currentPart ~= workspace do
@@ -25,10 +30,9 @@ return (function()
     if ScreenLabel then return ScreenLabel end
 
     local GuiName = "Debugger_LookOverlay"
-    local ScreenGui = PlayerGui:FindFirstChild(GuiName)
-
+    local ScreenGui = CoreGui:FindFirstChild(GuiName)
     if not ScreenGui then
-      ScreenGui = Instance.new("ScreenGui", PlayerGui)
+      ScreenGui = Instance.new("ScreenGui", CoreGui)
       ScreenGui.Name = GuiName
       ScreenGui.ResetOnSpawn = false
     end
@@ -47,7 +51,7 @@ return (function()
       Label.Text = "Nothing"
     end
 
-    task.delay(LifeTime, function()
+    task.delay(Debugger.LifeTime.Value, function()
       if Label and Label.Parent then Label:Destroy() end
     end)
 
@@ -108,7 +112,7 @@ return (function()
   end
 
   local function CreateBillboard(parent: Instance, text: string, color: Color3, size: number)
-    local Billboard = Instance.new("BillboardGui", parent)
+    local Billboard = Instance.new("BillboardGui", CoreGui)
     Billboard.Name = "Debug"
     Billboard.Size = UDim2.new(size or 1.4, 0, size or 1.4, 0)
     Billboard.StudsOffset = GetRandomStudsOffset()
@@ -121,10 +125,11 @@ return (function()
     TextLabel.Position = UDim2.new(-0.125, 0, -0.25, 0)
     TextLabel.BackgroundTransparency = 1
     TextLabel.TextScaled = true
-    TextLabel.TextColor3 = if color ~= nil then color else GetRandomColor()
+    TextLabel.TextColor3 = if typeof(color) == "Color3" then color else GetRandomColor()
 
-    task.delay(LifeTime, function()
+    task.delay(Debugger.LifeTime.Value, function()
       if Billboard and Billboard.Parent then Billboard:Destroy() end
+      BillboardedInstances[parent:GetFullName()] = nil
     end)
 
     return Billboard
@@ -163,15 +168,14 @@ return (function()
     local Position = Camera.Focus.Position
     print('Camera at position:', Position)
     if leaveMark then
-      local Part = Instance.new("Part", workspace)
+      local Part = Instance.new("Part", CoreGui)
       Part.Position = Position
-      Part.Color = GetRandomColor()
-      Part.Size = Vector3.new(1, 1, 1)
-      Part.CanCollide = false
-      Part.CanQuery = false
-      Part.Anchored = true
-      Part.Transparency = 0.5
-      task.delay(LifeTime, function()
+      Part.Size = Vector3.new(0.01, 0.01, 0.01)
+      local BoxHandleAdornment = Instance.new("BoxHandleAdornment", Part)
+      BoxHandleAdornment.Adornee = Part
+      BoxHandleAdornment.Transparency = 0.5
+      BoxHandleAdornment.Shading = Enum.AdornShading.XRay
+      task.delay(Debugger.LifeTime.Value, function()
         if Part and Part.Parent then Part:Destroy() end
       end)
     end
@@ -214,17 +218,13 @@ return (function()
     return serialized_table
   end
 
-  function Debugger.SetLifeTime(value: number): ()
-    LifeTime = type(value) == "number" and value or LifeTime
-  end
-
   return Debugger
 end)()
-
 -- Debugger = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/debugger.lua"))()
 
 -- FindCloseInstances(number, Instance)
 -- PrintCloseParts(number, Instance) / MarkPrintCloseParts(number, Instance, Color3)
 -- ShowNameOfLookedAtPart / PrintCameraPosition
 -- PrintTable(table, string, bool, string, string)
--- SetLifeTime(number)
+
+-- LifeTime: number
