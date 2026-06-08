@@ -2,18 +2,17 @@ return (function()
     local ValueMetaTable = {}
 
     ValueMetaTable.__index = function(self, key)
-        if key == "Value" then return rawget(self, "_value")
+        if key == "Value" then return rawget(self, "_v")
         elseif key == "Changed" then return ValueMetaTable.Changed
         else return rawget(self, key) end
     end
     ValueMetaTable.__newindex = function(self, key, new)
         if rawget(self, key) == new then return end
-        rawset(self, key, new) if key ~= "Value" then return end
-        print('LISTENER RUNEDs')
-        for _, cb in ipairs(rawget(self, "_listeners")) do cb(new) end
+        if key ~= "Value" then return rawset(self, key, new) else rawset(self, '_v', new) end
+        for _, cb in ipairs(rawget(self, "_ls")) do cb(new) end
     end
     function ValueMetaTable:Changed(cb)
-        local ls = rawget(self, "_listeners")
+        local ls = rawget(self, "_ls")
         table.insert(ls, cb)
         return function()
             local i = table.find(ls, cb)
@@ -22,7 +21,7 @@ return (function()
     end
 
     local CreateCustomValue = function(initial, cb)
-        return setmetatable({_value = initial, _listeners = cb and {cb} or {}}, ValueMetaTable)
+        return setmetatable({_v = initial, _ls = cb and {cb} or {}}, ValueMetaTable)
     end
 
     getgenv().CreateCustomValue = CreateCustomValue
