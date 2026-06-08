@@ -59,5 +59,6 @@ end)()
 
 -- Move(number, number) / Click(number, number) / ClickGui(GuiObject)
 -- Tap(Enum.KeyCode) / Scroll(number, number?, number?) / Type(string)
+
 -- MoveTimeInterval: number / ClickTimeInterval: number / TapTimeInterval: number
 -- ScrollTimeInterval: number / TypeTimeInterval: number
