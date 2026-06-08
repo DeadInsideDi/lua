@@ -21,10 +21,6 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
-  Fly.Enabled = CreateValue(false)
-  Fly.Speed = CreateValue(50)
-  Fly.Force = CreateValue(10000000)
-
   local function GetCharacterFromPart(currentPart: Instance): Model | nil
     while currentPart and currentPart ~= workspace do
       if currentPart:FindFirstChildOfClass("Humanoid") then
@@ -66,6 +62,7 @@ return (function()
   end
 
   local function UpdateFly()
+    print("Fly.Enabled.Value", Fly.Enabled.Value)
     if not Fly.Enabled.Value then
       CleanupPhysics()
       if Humanoid then Humanoid.PlatformStand = false end
@@ -101,16 +98,16 @@ return (function()
     end)
   end
 
-  Fly.Enabled:Changed(UpdateFly)
-  Fly.Speed:Changed(UpdateFly)
-  Fly.Force:Changed(UpdateFly)
-
   RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
-  RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value, function()
+  RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value * 2, function()
     Root = FindCharacterModel()
     print(Root, Root:GetFullName())
     Humanoid = Root:FindFirstChildOfClass("Humanoid")
   end)
+
+  Fly.Enabled = CreateValue(false, UpdateFly)
+  Fly.Speed = CreateValue(50, UpdateFly)
+  Fly.Force = CreateValue(10000000, UpdateFly)
 
   return Fly
 end)()
