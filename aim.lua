@@ -13,27 +13,19 @@ return (function()
   end
   getgenv().AIM_RBX_CONNECTIONS = {}
 
-  local function FindValueInstance(vtype: string, name: string, value: any)
-    local Value = script:FindFirstChild(name)
-
-    if Value == nil then
-      Value = Instance.new(vtype.."Value", script)
-      Value.Name = name
-      Value.Value = value
-    end
-
-    return Value
+  if not getgenv().CreateCustomValue then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
   end
 
-  local UseVirtualMouseValue = FindValueInstance("Bool", "Aim_UseVirtualMouse", true)
-  local Speed = 0.5
-  local AimPart = "HumanoidRootPart"
-  local TeamCheck = false
-  local MaxDistance = 5000
-  local MaxAngle = 180
-  local DistanceWeight = 0.1
-  local AngleWeight = 1
-  local HealthWeight = 0
+  Aim.UseVirtualMouse = getgenv().CreateCustomValue(true)
+  Aim.Speed = 0.5
+  Aim.AimPart = "HumanoidRootPart"
+  Aim.TeamCheck = false
+  Aim.MaxDistance = 5000
+  Aim.MaxAngle = 180
+  Aim.DistanceWeight = 0.1
+  Aim.AngleWeight = 1
+  Aim.HealthWeight = 0
 
   local function GetAngleOffset(targetPos: Vector3): number
     local Dir = (targetPos - Camera.Focus.Position).Unit
@@ -41,8 +33,8 @@ return (function()
     return math.deg(math.acos(math.clamp(Dot, -1, 1)))
   end
 
-  local function GetDistance(fromPos: Vector3, toPos: Vector3)
-    return (fromPos - toPos).Magnitude
+  local function GetDistance(toPos: Vector3)
+    return (Camera.Focus.Position - toPos).Magnitude
   end
 
   local function GetHealthOfPlayer(player): number
@@ -55,13 +47,17 @@ return (function()
   end
 
   local function GetPartOfModel(model: Model): Instance
-    return model:FindFirstChild(AimPart) or model.PrimaryPart or model:FindFirstChildOfClass("BasePart")
+    return model:FindFirstChild(Aim.AimPart.Value) or model.PrimaryPart or model:FindFirstChildOfClass("BasePart")
+  end
+
+  local function CountScore(dist: number, angle: number, health: number): number
+    return dist * Aim.DistanceWeight.Value + angle * Aim.AngleWeight.Value + health * Aim.HealthWeight.Value
   end
 
   local function AimToPositionCFrame(position: Vector3): ()
     local CameraCFrame = Camera.CFrame
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
-    Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, Speed))
+    Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, Aim.Speed.Value))
   end
 
   local function AimToPositionVirtualMouse(targetPos: Vector3): ()
@@ -70,15 +66,15 @@ return (function()
 
     local YawDiff = (math.atan2(Look.X, Look.Z) - math.atan2(Dir.X, Dir.Z) + math.pi) % (2 * math.pi) - math.pi
     local pitchDiff = math.asin(Look.Y) - math.asin(Dir.Y)
-    local Sensitivity = UserGameSettings.MouseSensitivity / Speed
+    local Sensitivity = UserGameSettings.MouseSensitivity / Aim.Speed.Value
 
     local DeltaX = YawDiff / (Sensitivity * ROTATION_SPEED_MOUSE.X)
     local DeltaY = pitchDiff / (Sensitivity * ROTATION_SPEED_MOUSE.Y)
     VirtualInputManager:SendMouseMoveDeltaEvent(DeltaX, DeltaY, game)
   end
 
-  Aim.AimToPosition = UseVirtualMouseValue.Value and AimToPositionVirtualMouse or AimToPositionCFrame
-  UseVirtualMouseValue.Changed:Connect(function(value)
+  Aim.AimToPosition = Aim.UseVirtualMouse.Value and AimToPositionVirtualMouse or AimToPositionCFrame
+  Aim.UseVirtualMouse:Changed(function(value)
     Aim.AimToPosition = value and AimToPositionVirtualMouse or AimToPositionCFrame
   end)
 
@@ -102,13 +98,12 @@ return (function()
 
   function Aim.ChoosePlayerToAim(playerList: {Player}?): Player | nil
     local PlayersList = playerList or Players:GetPlayers()
-    local CameraCFrame = Camera.CFrame
     local BestTarget = nil
     local SmallestScore = math.huge
 
     for _, Player in ipairs(PlayersList) do
       if Player == Client then continue end
-      if TeamCheck and IsSameTeam(Player) then continue end
+      if Aim.TeamCheck.Value and IsSameTeam(Player) then continue end
 
       local PlayerChar = Player.Character
       if not PlayerChar then continue end
@@ -117,17 +112,13 @@ return (function()
       if not Part then continue end
 
       local TargetPos = Part.Position
-      local Dist = GetDistance(CameraCFrame.Position, TargetPos)
-      if Dist > MaxDistance then continue end
+      local Dist = GetDistance(TargetPos)
+      if Dist > Aim.MaxDistance.Value then continue end
 
-      local AngleOffset = GetAngleOffset(CameraCFrame, TargetPos)
-      if AngleOffset > MaxAngle then continue end
+      local AngleOffset = GetAngleOffset(TargetPos)
+      if AngleOffset > Aim.MaxAngle.Value then continue end
 
-      local Score = Dist * DistanceWeight + AngleOffset * AngleWeight
-      if HealthWeight ~= 0 then
-        Score += GetHealthOfPlayer(Player) * HealthWeight
-      end
-
+      local Score = CountScore(Dist, AngleOffset, GetHealthOfPlayer(Player))
       if Score < SmallestScore then
         SmallestScore = Score
         BestTarget = Player
@@ -136,49 +127,13 @@ return (function()
     return BestTarget
   end
 
-  function Aim.SetUseVirtualMouse(value: boolean): ()
-    UseVirtualMouseValue.Value = value or false
-  end
-
-  function Aim.SetSpeed(value: number): ()
-    Speed = math.clamp(type(value) == "number" and value or Speed, 0.01, 1)
-  end
-
-  function Aim.SetAimPart(value: string): ()
-    AimPart = type(value) == "string" and value or AimPart
-  end
-
-  function Aim.SetTeamCheck(value: boolean): ()
-    TeamCheck = value or false
-  end
-
-  function Aim.SetMaxDistance(value: number): ()
-    MaxDistance = type(value) == "number" and value or MaxDistance
-  end
-
-  function Aim.SetMaxAngle(value: number): ()
-    MaxAngle = type(value) == "number" and value or MaxAngle
-  end
-
-  function Aim.SetDistanceWeight(value: number): ()
-    DistanceWeight = type(value) == "number" and value or DistanceWeight
-  end
-
-  function Aim.SetAngleWeight(value: number): ()
-    AngleWeight = type(value) == "number" and value or AngleWeight
-  end
-
-  function Aim.SetHealthWeight(value: number): ()
-    HealthWeight = type(value) == "number" and value or HealthWeight
-  end
-
   return Aim
 end)()
 -- Aim = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
 -- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
--- SetUseVirtualMouse(bool)
--- SetSpeed(number) / SetAimPart(string) / SetTeamCheck(bool)
--- SetMaxDistance(number) / SetMaxAngle(number)
--- SetDistanceWeight(number) / SetAngleWeight(number) / SetHealthWeight(number)
+
+-- UseVirtualMouse: bool / Speed: number / AimPart: string / TeamCheck: bool
+-- MaxDistance: number / MaxAngle: number
+-- DistanceWeight: number / AngleWeight: number / HealthWeight: number
