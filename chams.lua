@@ -48,7 +48,7 @@ return (function()
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
-      local Highlight = Instance.new("Highlight", CoreGui)
+      local Highlight = Instance.new("Highlight", workspace)
       Highlight.Name = "ChamsHighlight_"..PName
       Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       Highlight.Adornee = partOrModel
