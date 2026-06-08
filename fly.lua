@@ -62,7 +62,6 @@ return (function()
   end
 
   local function UpdateFly()
-    print("Fly.Enabled.Value", Fly.Enabled.Value)
     if not Fly.Enabled.Value then
       CleanupPhysics()
       if Humanoid then Humanoid.PlatformStand = false end
@@ -100,9 +99,11 @@ return (function()
 
   RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
   RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value * 2, function()
-    Root = FindCharacterModel()
-    print(Root, Root:GetFullName())
-    Humanoid = Root:FindFirstChildOfClass("Humanoid")
+    if Fly.Enabled.Value then
+      Root = FindCharacterModel()
+      print(Root, Root:GetFullName())
+      Humanoid = Root:FindFirstChildOfClass("Humanoid")
+    end
   end)
 
   Fly.Enabled = CreateValue(false, UpdateFly)
