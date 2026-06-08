@@ -17,14 +17,14 @@ return (function()
 
   function Controller.Move(dx: number, dy: number): ()
     VirtualInputManager:SendMouseMoveDeltaEvent(dx, dy, game)
-    task.wait(Controller.MoveTimeInterval)
+    task.wait(Controller.MoveTimeInterval.Value)
   end
 
   function Controller.Click(x: number, y: number): ()
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
-    task.wait(Controller.ClickTimeInterval)
+    task.wait(Controller.ClickTimeInterval.Value)
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
-    task.wait(Controller.ClickTimeInterval)
+    task.wait(Controller.ClickTimeInterval.Value)
   end
 
   function Controller.ClickGui(guiElement: GuiObject): ()
@@ -38,19 +38,19 @@ return (function()
 
   function Controller.Tap(keyCode: Enum.KeyCode): ()
     VirtualInputManager:SendKeyEvent(true, keyCode, false, game)
-    task.wait(Controller.TapTimeInterval)
+    task.wait(Controller.TapTimeInterval.Value)
     VirtualInputManager:SendKeyEvent(false, keyCode, false, game)
-    task.wait(Controller.TapTimeInterval)
+    task.wait(Controller.TapTimeInterval.Value)
   end
 
   function Controller.Scroll(scrollDelta: number, x: number?, y: number?): ()
     VirtualInputManager:SendMouseWheelEvent(x or 0, y or 0, scrollDelta, game)
-    task.wait(Controller.ScrollTimeInterval)
+    task.wait(Controller.ScrollTimeInterval.Value)
   end
 
   function Controller.Type(character: string): ()
     VirtualInputManager:SendTextInputCharacterEvent(character, game)
-    task.wait(Controller.TypeTimeInterval)
+    task.wait(Controller.TypeTimeInterval.Value)
   end
 
   return Controller
