@@ -21,6 +21,11 @@ return (function()
       highlight.FillTransparency = Profile.FillTransparency.Value
       highlight.OutlineColor = Profile.OutlineColor.Value
       highlight.OutlineTransparency = Profile.OutlineTrans.Value
+      print(highlight.Enabled)
+      print(highlight.FillColor)
+      print(highlight.FillTransparency)
+      print(highlight.OutlineColor)
+      print(highlight.OutlineTransparency)
     end
 
     local function UpdateAllStyles()
