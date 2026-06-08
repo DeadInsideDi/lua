@@ -14,7 +14,7 @@ return (function()
   getgenv().AIM_RBX_CONNECTIONS = {}
 
   if not getgenv().CreateCustomValue then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
   end
 
   Aim.UseVirtualMouse = getgenv().CreateCustomValue(true)
