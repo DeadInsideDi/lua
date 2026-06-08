@@ -101,7 +101,6 @@ return (function()
   RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value * 2, function()
     if Fly.Enabled.Value then
       Root = FindCharacterModel()
-      print(Root, Root:GetFullName())
       Humanoid = Root:FindFirstChildOfClass("Humanoid")
     end
   end)
