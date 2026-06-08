@@ -4,34 +4,44 @@ return (function()
   local RunService = game:GetService("RunService")
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
-  local Character = Client.Character or Client.CharacterAdded:Wait()
-  local Root = Character:WaitForChild("HumanoidRootPart")
-  local Humanoid = Character:WaitForChild("Humanoid")
   local Camera = workspace.CurrentCamera
   local RenderStepName = "Fly_Update"
-  local BodyGyro = Root:FindFirstChildOfClass("BodyGyro")
-  local BodyVelocity = Root:FindFirstChildOfClass("BodyVelocity")
+  local Root = nil
+  local Humanoid = nil
+  local BodyGyro = nil
+  local BodyVelocity = nil
 
   for _, Connection in ipairs(getgenv().FLY_RBX_CONNECTIONS or {}) do
     Connection:Disconnect()
   end
   getgenv().FLY_RBX_CONNECTIONS = {}
 
-  local function FindValueInstance(vtype: string, name: string, value: any)
-    local Value = script:FindFirstChild(name)
+  if not getgenv().CreateCustomValue then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
+  end
+  local CreateValue = getgenv().CreateCustomValue
 
-    if Value == nil then
-      Value = Instance.new(vtype.."Value", script)
-      Value.Name = name
-      Value.Value = value
+  Fly.Enabled = CreateValue(false)
+  Fly.Speed = CreateValue(50)
+  Fly.Force = CreateValue(10000000)
+
+  local function GetCharacterFromPart(currentPart: Instance): Model | nil
+    while currentPart and currentPart ~= workspace do
+      if currentPart:FindFirstChildOfClass("Humanoid") then
+        return currentPart
+      end
+      currentPart = currentPart.Parent
     end
-
-    return Value
+    return nil
   end
 
-  local EnabledValue = FindValueInstance("Bool", "Fly_Enabled", false)
-  local SpeedValue = FindValueInstance("Number", "Fly_Speed", 50)
-  local ForceValue = FindValueInstance("Number", "Fly_Force", 10000000)
+  local function FindCharacterModel(): Model | nil
+    local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 3)
+    for _, Part in ipairs(Parts) do
+      local Model = GetCharacterFromPart(Part)
+      if Model then return Model end
+    end
+  end
 
   local function CleanupPhysics()
     if BodyGyro then BodyGyro:Destroy() end
@@ -46,19 +56,19 @@ return (function()
 
     BodyGyro = Instance.new("BodyGyro", Root)
     BodyGyro.D = 500
-    BodyGyro.MaxTorque = Vector3.new(1, 1, 1) * ForceValue.Value
+    BodyGyro.MaxTorque = Vector3.one * Fly.Force.Value
     BodyGyro.P = 3000
 
     BodyVelocity = Instance.new("BodyVelocity", Root)
-    BodyVelocity.MaxForce = Vector3.new(1, 1, 1) * ForceValue.Value
+    BodyVelocity.MaxForce = Vector3.one * Fly.Force.Value
     BodyVelocity.P = 20000
-    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    BodyVelocity.Velocity = Vector3.zero
   end
 
   local function UpdateFly()
-    if not EnabledValue.Value then
+    if not Fly.Enabled.Value then
       CleanupPhysics()
-      Humanoid.PlatformStand = false
+      if Humanoid then Humanoid.PlatformStand = false end
       RunService:UnbindFromRenderStep(RenderStepName)
       return
     end
@@ -67,8 +77,8 @@ return (function()
       SetupPhysics()
     end
 
-    Humanoid.PlatformStand = true
-    local Speed = SpeedValue.Value
+    if Humanoid then Humanoid.PlatformStand = true end
+    local Speed = Fly.Speed.Value
 
     RunService:UnbindFromRenderStep(RenderStepName)
     RunService:BindToRenderStep(RenderStepName, Enum.RenderPriority.Input.Value, function()
@@ -85,55 +95,24 @@ return (function()
           local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
           BodyVelocity.Velocity = (Fwd * Dir:Dot(Fwd) + Right * Dir:Dot(Right)).Unit * Speed
         else
-          BodyVelocity.Velocity = Vector3.new(0,0,0)
+          BodyVelocity.Velocity = Vector3.zero
         end
       end
     end)
   end
 
-  EnabledValue.Changed:Connect(UpdateFly)
-  SpeedValue.Changed:Connect(UpdateFly)
-  ForceValue.Changed:Connect(UpdateFly)
+  Fly.Enabled:Changed(UpdateFly)
+  Fly.Speed:Changed(UpdateFly)
+  Fly.Force:Changed(UpdateFly)
 
-  local function setup(newCharacter: Model)
-    Character = newCharacter
-    Root = Character:WaitForChild("HumanoidRootPart")
-    Humanoid = Character:WaitForChild("Humanoid")
-    Camera = workspace.CurrentCamera
-    CleanupPhysics()
-    UpdateFly()
-  end
-
-  setup(Character)
-  table.insert(getgenv().FLY_RBX_CONNECTIONS, Client.CharacterAdded:Connect(setup))
-
-  function Fly.SetEnabled(value: boolean): ()
-    EnabledValue.Value = value or false
-  end
-
-  function Fly.Enable(): ()
-    Fly.SetEnabled(true)
-  end
-
-  function Fly.Disable(): ()
-    Fly.SetEnabled(false)
-  end
-
-  function Fly.ChangeSpeed(numberOrFunc: number | (number) -> number): ()
-    if type(numberOrFunc) == "function" then
-      SpeedValue.Value = numberOrFunc(SpeedValue.Value) or SpeedValue.Value
-    else
-      SpeedValue.Value = numberOrFunc or SpeedValue.Value
-    end
-  end
-
-  function Fly.SetForce(value: number): ()
-    ForceValue.Value = value == nil and ForceValue.Value or value
-  end
+  RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
+  RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value, function()
+    Root = FindCharacterModel()
+    Humanoid = Root:FindFirstChildOfClass("Humanoid")
+  end)
 
   return Fly
 end)()
--- Fly = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/refs/heads/main/fly.lua"))()
+-- Fly = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/fly.lua"))()
 
--- SetEnabled(bool) / Enable / Disable
--- ChangeSpeed(number | (number) -> number) / SetForce(number)
+-- Enabled: bool / Speed: number / Force: number
