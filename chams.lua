@@ -57,12 +57,8 @@ return (function()
         Profile.AddInstance(player.Character)
       end
 
-      player.CharacterAdded:Connect(function(character)
-        Profile.AddInstance(character)
-      end)
-      player.CharacterRemoving:Connect(function(character)
-        Profile.Remove(character)
-      end)
+      player.CharacterAdded:Connect(Profile.AddInstance)
+      player.CharacterRemoving:Connect(Profile.Remove)
     end
 
     function Profile.Remove(partOrModel: Instance): ()
