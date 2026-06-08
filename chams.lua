@@ -44,7 +44,7 @@ return (function()
       for k, v in ManagedTargets do
         i+=1
       end
-      print(i, 'COUNT !!!!!!!!!!!!!!!!!!!')
+      print(i, 'COUNT1 !!!!!!!!!!!!!!!!!!!')
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
