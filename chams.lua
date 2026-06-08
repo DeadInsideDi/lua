@@ -18,15 +18,9 @@ return (function()
     local function ApplyStyle(highlight: Highlight)
       highlight.Enabled = Profile.Enabled.Value
       highlight.FillColor = Profile.FillColor.Value
-      highlight.FillTransparency = Profile.FillTrans.Value
+      highlight.FillTransparency = Profile.FillTransparency.Value
       highlight.OutlineColor = Profile.OutlineColor.Value
       highlight.OutlineTransparency = Profile.OutlineTrans.Value
-      print(highlight.Enabled)
-      print(highlight.FillColor)
-      print(highlight.FillTransparency)
-      print(highlight.OutlineColor)
-      print(highlight.OutlineTransparency)
-
     end
 
     local function UpdateAllStyles()
@@ -41,20 +35,15 @@ return (function()
 
     Profile.Enabled = CreateValue(false, UpdateAllStyles)
     Profile.FillColor = CreateValue(Color3.fromRGB(255, 0, 0), UpdateAllStyles)
-    Profile.FillTrans = CreateValue(0.75, UpdateAllStyles)
+    Profile.FillTransparency = CreateValue(0.75, UpdateAllStyles)
     Profile.OutlineColor = CreateValue(Color3.fromRGB(255, 255, 255), UpdateAllStyles)
     Profile.OutlineTrans = CreateValue(0.25, UpdateAllStyles)
 
     function Profile.AddInstance(partOrModel: Instance): ()
-      local i = 0
-      for k, v in ManagedTargets do
-        i+=1
-      end
-      print(i, 'COUNT2 !!!!!!!!!!!!!!!!!!!')
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
-      local Highlight = Instance.new("Highlight", workspace)
+      local Highlight = Instance.new("Highlight", CoreGui)
       Highlight.Name = "ChamsHighlight_"..PName
       Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       Highlight.Adornee = partOrModel
@@ -94,13 +83,13 @@ return (function()
 
   function Chams.EnableAll(): ()
     for _, Profile in pairs(Profiles) do
-      Profile.Enabled = true
+      Profile.Enabled.Value = true
     end
   end
 
   function Chams.DisableAll(): ()
     for _, Profile in pairs(Profiles) do
-      Profile.Enabled = false
+      Profile.Enabled.Value = false
     end
   end
 
