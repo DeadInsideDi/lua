@@ -1,4 +1,3 @@
-
 return (function()
     local ValueMetaTable = {}
 
@@ -29,7 +28,7 @@ return (function()
 
   return CreateCustomValue
 end)()
--- CreateCustomValue = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
+-- CreateCustomValue = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
 
 -- CreateCustomValue(any, (any) -> ()) -> T
 -- T.Value / T:Changed((any) -> ()) -> ()
