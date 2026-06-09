@@ -1,17 +1,15 @@
 return (function()
   local Fly = {}
 
+  local InputService = game:GetService("UserInputService")
   local RunService = game:GetService("RunService")
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
-  local RenderStepName = "Fly_Update"
-  local Root = nil
-  local Humanoid = nil
-  local BodyGyro = nil
-  local BodyVelocity = nil
+  local Character = nil
+  local MoveDirection = Vector3.zero
 
-  for _, Connection in ipairs(getgenv().FLY_RBX_CONNECTIONS or {}) do
+  for _, Connection in getgenv().FLY_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
   getgenv().FLY_RBX_CONNECTIONS = {}
@@ -21,96 +19,77 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
-  local function GetCharacterFromPart(currentPart: Instance): Model | nil
-    while currentPart and currentPart ~= workspace do
-      if currentPart:FindFirstChildOfClass("Humanoid") then
-        return currentPart
-      end
-      currentPart = currentPart.Parent
-    end
-    return nil
-  end
-
-  local function FindCharacterModel(): Model | nil
-    local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 3)
-    for _, Part in ipairs(Parts) do
-      local Model = GetCharacterFromPart(Part)
-      if Model then return Model end
-    end
-  end
-
-  local function CleanupPhysics()
-    if BodyGyro then BodyGyro:Destroy() end
-    if BodyVelocity then BodyVelocity:Destroy() end
-    BodyGyro = nil
-    BodyVelocity = nil
-  end
-
-  local function SetupPhysics()
-    CleanupPhysics()
-    if not Root then return end
-
-    BodyGyro = Instance.new("BodyGyro", Root)
-    BodyGyro.D = 500
-    BodyGyro.MaxTorque = Vector3.one * Fly.Force.Value
-    BodyGyro.P = 3000
-
-    BodyVelocity = Instance.new("BodyVelocity", Root)
-    BodyVelocity.MaxForce = Vector3.one * Fly.Force.Value
-    BodyVelocity.P = 20000
-    BodyVelocity.Velocity = Vector3.zero
+  local function GetPartOfModel(model: Model): BasePart | nil
+    if model.PrimaryPart then return model.PrimaryPart end
+    return model:FindFirstChildOfClass("BasePart")
   end
 
   local function UpdateFly()
-    if not Fly.Enabled.Value then
-      CleanupPhysics()
-      if Humanoid then Humanoid.PlatformStand = false end
-      RunService:UnbindFromRenderStep(RenderStepName)
-      return
-    end
+    local Part = GetPartOfModel(Character)
+    if Part then Part.Anchored = false end
 
-    if not BodyGyro or not BodyVelocity then
-      SetupPhysics()
-    end
+    RunService:UnbindFromRenderStep("UpdateFly")
+    if not Fly.Enabled.Value then return end
 
-    if Humanoid then Humanoid.PlatformStand = true end
     local Speed = Fly.Speed.Value
-
-    RunService:UnbindFromRenderStep(RenderStepName)
-    RunService:BindToRenderStep(RenderStepName, Enum.RenderPriority.Input.Value, function()
-      if not Root or not Root.Parent then
-        RunService:UnbindFromRenderStep(RenderStepName)
-        CleanupPhysics()
-        return
-      end
-
-      if BodyGyro and BodyVelocity then
-        BodyGyro.CFrame = Camera.CFrame
-        local Dir = Humanoid.MoveDirection
-        if Dir.Magnitude > 0 then
-          local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
-          BodyVelocity.Velocity = (Fwd * Dir:Dot(Fwd) + Right * Dir:Dot(Right)).Unit * Speed
-        else
-          BodyVelocity.Velocity = Vector3.zero
-        end
+    if Part then Part.Anchored = true end
+    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Last.Value * 2, function()
+      if Character then
+        local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
+        Character:TranslateBy((Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit * Speed)
       end
     end)
   end
-
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(50, UpdateFly)
-  Fly.Force = CreateValue(10000000, UpdateFly)
+  Fly.Speed = CreateValue(30, UpdateFly)
 
-  RunService:UnbindFromRenderStep("FindCharacterRootAndHumaniod")
-  RunService:BindToRenderStep("FindCharacterRootAndHumaniod", Enum.RenderPriority.Last.Value * 2, function()
+  RunService:UnbindFromRenderStep("FindCharacter")
+  RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
     if Fly.Enabled.Value then
-      Root = FindCharacterModel()
-      Humanoid = Root:FindFirstChildOfClass("Humanoid")
+      local Counts, MaxCount, PossibleCharacter = {}, 0, nil
+      local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
+      for _, Part in Parts do
+        local Model = Part:FindFirstAncestorOfClass("Model")
+        if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
+      end
+
+      for Model, Count in Counts do
+        if Count > MaxCount then
+          MaxCount = Count
+          PossibleCharacter = Model
+        end
+      end
+      Character = PossibleCharacter
     end
   end)
+
+  local Keys = {
+    [Enum.KeyCode.W] = 0, [Enum.KeyCode.Up] = 0,
+    [Enum.KeyCode.S] = 0, [Enum.KeyCode.Down] = 0,
+    [Enum.KeyCode.A] = 0, [Enum.KeyCode.Left] = 0,
+    [Enum.KeyCode.D] = 0, [Enum.KeyCode.Right] = 0
+  }
+
+  local function update()
+    local x = math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right]) - math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left])
+    local z = math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down]) - math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up])
+    MoveDirection = Vector3.new(x, 0, z)
+  end
+
+  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputBegan:Connect(function(input, processed)
+    if processed or not Keys[input.KeyCode] then return end
+    Keys[input.KeyCode] = 1
+    update()
+  end))
+
+  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputEnded:Connect(function(input)
+    if not Keys[input.KeyCode] then return end
+    Keys[input.KeyCode] = 0
+    update()
+  end))
 
   return Fly
 end)()
 -- Fly = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/fly.lua"))()
 
--- Enabled: bool / Speed: number / Force: number
+-- Enabled: bool / Speed: number
