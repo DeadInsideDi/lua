@@ -2,8 +2,8 @@ return (function()
   local Debugger = {}
 
   local Players = game:GetService("Players")
+  local CoreGui = game:GetService("CoreGui")
   local Client = Players.LocalPlayer
-  local CoreGui = Client:WaitForChild("CoreGui")
   local Camera = workspace.CurrentCamera
 
   local BillboardedInstances: {[string]: Instance} = {}
