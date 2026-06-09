@@ -43,7 +43,7 @@ return (function()
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(10, UpdateFly)
+  Fly.Speed = CreateValue(1, UpdateFly)
 
   RunService:UnbindFromRenderStep("FindCharacter")
   RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
@@ -71,8 +71,8 @@ return (function()
   }
 
   local function UpdateMoveDirection()
-    local x = math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right]) - math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left])
-    local z = math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down]) - math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up])
+    local x = math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left]) - math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right])
+    local z = math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up]) - math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down])
     MoveDirection = Vector3.new(x, 0, z)
   end
 
