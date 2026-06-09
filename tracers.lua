@@ -11,13 +11,25 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
+  local function GetPositionOfModelOrPart(instance: Instance): Vector3
+    local TargetPosition = nil
+
+    if instance:IsA("BasePart") then
+      TargetPosition = instance.Position
+    elseif instance:IsA("Model") then
+      TargetPosition = instance:GetPivot().Position
+    end
+
+    return TargetPosition
+  end
+
   RunService:UnbindFromRenderStep("TracersUpdatePosition")
   RunService:BindToRenderStep("TracersUpdatePosition", Enum.RenderPriority.Character.Value * 2, function()
     local FocusPos = Camera.Focus.Position
     for _, Profile in Profiles do
       for Target, Line in Profile.ManagedTargets do
         if not Target then continue end
-        local TargetPos = Target.Position
+        local TargetPos = GetPositionOfModelOrPart(Target)
         local Direction = FocusPos - TargetPos
         local Distance = Direction.Magnitude
         if Distance == 0 then continue end
