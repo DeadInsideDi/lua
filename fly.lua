@@ -38,8 +38,7 @@ return (function()
       if Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-        Character:TranslateBy(direction.Unit * Speed)
-        Character.CFrame = CFrame.lookAt(Character.CFrame, Fwd)
+        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed, Fwd))
       end
     end)
   end
