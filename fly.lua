@@ -37,7 +37,8 @@ return (function()
     RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Last.Value * 2, function()
       if Character then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
-        Character:TranslateBy((Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit * Speed)
+        -- (Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit
+        Character:TranslateBy(Vector3.new(0,0,1) * Speed)
       end
     end)
   end
