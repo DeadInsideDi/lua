@@ -40,6 +40,7 @@ return (function()
       end
     end)
   end
+
   Fly.Enabled = CreateValue(false, UpdateFly)
   Fly.Speed = CreateValue(30, UpdateFly)
 
@@ -70,7 +71,7 @@ return (function()
     [Enum.KeyCode.D] = 0, [Enum.KeyCode.Right] = 0
   }
 
-  local function update()
+  local function UpdateMoveDirection()
     local x = math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right]) - math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left])
     local z = math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down]) - math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up])
     MoveDirection = Vector3.new(x, 0, z)
@@ -79,13 +80,13 @@ return (function()
   table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputBegan:Connect(function(input, processed)
     if processed or not Keys[input.KeyCode] then return end
     Keys[input.KeyCode] = 1
-    update()
+    UpdateMoveDirection()
   end))
 
   table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputEnded:Connect(function(input)
     if not Keys[input.KeyCode] then return end
     Keys[input.KeyCode] = 0
-    update()
+    UpdateMoveDirection()
   end))
 
   return Fly
