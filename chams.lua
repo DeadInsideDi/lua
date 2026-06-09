@@ -16,7 +16,6 @@ return (function()
 
   function Chams.CreateCham()
     local Profile = {}
-    local ManagedTargets: {[Instance]: Highlight} = {}
     table.insert(Profiles, Profile)
 
     local function ApplyStyle(highlight: Highlight)
@@ -28,15 +27,16 @@ return (function()
     end
 
     local function UpdateAllStyles()
-      for Target, Highlight in pairs(ManagedTargets) do
+      for Target, Highlight in pairs(Profile.ManagedTargets) do
         if Target.Parent and Highlight.Parent then
           ApplyStyle(Highlight)
         else
-          ManagedTargets[Target] = nil
+          Profile.ManagedTargets[Target] = nil
         end
       end
     end
 
+    Profile.ManagedTargets = {}
     Profile.Enabled = CreateValue(false, UpdateAllStyles)
     Profile.FillColor = CreateValue(Color3.fromRGB(255, 0, 0), UpdateAllStyles)
     Profile.FillTransparency = CreateValue(0.75, UpdateAllStyles)
@@ -45,14 +45,14 @@ return (function()
 
     function Profile.AddInstance(partOrModel: Instance): ()
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
-      if ManagedTargets[partOrModel] then return end
+      if Profile.ManagedTargets[partOrModel] then return end
 
       local Highlight = Instance.new("Highlight", ChamsFolder)
       Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       Highlight.Adornee = partOrModel
 
       ApplyStyle(Highlight)
-      ManagedTargets[partOrModel] = Highlight
+      Profile.ManagedTargets[partOrModel] = Highlight
     end
 
     function Profile.AddPlayer(player: Player): ()
@@ -65,16 +65,16 @@ return (function()
     end
 
     function Profile.Remove(partOrModel: Instance): ()
-      local Highlight = ManagedTargets[partOrModel]
+      local Highlight = Profile.ManagedTargets[partOrModel]
       if Highlight then Highlight:Destroy() end
-      ManagedTargets[partOrModel] = nil
+      Profile.ManagedTargets[partOrModel] = nil
     end
 
     function Profile.Clear(): ()
-      for _, Highlight in pairs(ManagedTargets) do
+      for _, Highlight in pairs(Profile.ManagedTargets) do
         if Highlight then Highlight:Destroy() end
       end
-      table.clear(ManagedTargets)
+      table.clear(Profile.ManagedTargets)
     end
 
     return Profile
