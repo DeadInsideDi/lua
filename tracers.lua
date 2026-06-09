@@ -34,10 +34,10 @@ return (function()
   end
   getgenv().TRACERS_RBX_CONNECTIONS = {}
 
-  local TracerFolder = CoreGui:FindFirstChild("Tracers_Folder")
-  if TracerFolder then TracerFolder:Destroy() end
-  TracerFolder = Instance.new("Folder", CoreGui)
-  TracerFolder.Name = "Tracers_Folder"
+  local TracerFolders = CoreGui:FindFirstChild("Tracers_Folder")
+  if TracerFolders then TracerFolders:Destroy() end
+  TracerFolders = Instance.new("Folder", CoreGui)
+  TracerFolders.Name = "Tracers_Folder"
 
   function Tracers.CreateTracer()
     local Profile = {}
@@ -74,7 +74,7 @@ return (function()
       end
       if Profile.ManagedTargets[instance] then return end
 
-      local Line = Instance.new("LineHandleAdornment", TracerFolder)
+      local Line = Instance.new("LineHandleAdornment", TracerFolders)
       Line.ZIndex = 1
       Line.Adornee = instance
 
@@ -84,7 +84,7 @@ return (function()
     end
 
     function Profile.AddPosition(pos: Vector3)
-      local Part = Instance.new("Part", TracerFolder)
+      local Part = Instance.new("Part", TracerFolders)
       Part.Position = pos
       Part.Transparency = 1
       Part.Anchored = true
