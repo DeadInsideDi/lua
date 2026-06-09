@@ -6,7 +6,6 @@ return (function()
   local Players = game:GetService("Players")
   local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
-  local Character = nil
   local MoveDirection = Vector3.zero
 
   for _, Connection in getgenv().FLY_RBX_CONNECTIONS or {} do
@@ -14,6 +13,9 @@ return (function()
   end
   getgenv().FLY_RBX_CONNECTIONS = {}
 
+  if not getgenv().CharacterFinderRunned then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/characterfinder.lua"))()
+  end
   if not getgenv().CreateCustomValue then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
   end
@@ -26,8 +28,8 @@ return (function()
   end
 
   local function UpdateFly()
-    if not Character then return end
-    local Part = GetPartOfModel(Character)
+    if not getgenv().Character then return end
+    local Part = GetPartOfModel(getgenv().Character)
     if Part then Part.Anchored = false end
     Part.AssemblyLinearVelocity = Vector3.zero
 
@@ -37,34 +39,16 @@ return (function()
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
     RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value * 2, function(dt)
-      if Character and MoveDirection.Magnitude > 0 then
+      if getgenv().Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed * dt) * Camera.CFrame.Rotation)
+        getgenv().Character:PivotTo(CFrame.new(getgenv().Character:GetPivot().Position + direction.Unit * Speed * dt) * Camera.CFrame.Rotation)
       end
     end)
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
   Fly.Speed = CreateValue(20, UpdateFly)
-
-  RunService:UnbindFromRenderStep("FlyFindCharacter")
-  RunService:BindToRenderStep("FlyFindCharacter", Enum.RenderPriority.Last.Value * 2, function()
-    local Counts, MaxCount, PossibleCharacter = {}, 0, nil
-    local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
-    for _, Part in Parts do
-      local Model = Part:FindFirstAncestorOfClass("Model")
-      if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
-    end
-
-    for Model, Count in Counts do
-      if Count > MaxCount then
-        MaxCount = Count
-        PossibleCharacter = Model
-      end
-    end
-    Character = PossibleCharacter
-  end)
 
   local Keys = {
     [Enum.KeyCode.W] = 0, [Enum.KeyCode.Up] = 0,
