@@ -13,7 +13,7 @@ return (function()
     Turn: (self: Toggle, newState: boolean?) -> ()
   }
 
-  for _, Connection in ipairs(getgenv().LISTENER_RBX_CONNECTIONS or {}) do
+  for _, Connection in getgenv().LISTENER_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
   getgenv().LISTENER_RBX_CONNECTIONS = {}
@@ -34,7 +34,7 @@ return (function()
       Locals = {}
     }
 
-    function ToggleInstance:Turn(newState: boolean?)
+    function ToggleInstance:Turn(newState: boolean?): ()
       if newState == nil then return end
       self.State = newState
 
@@ -70,7 +70,7 @@ return (function()
       Locals = {}
     }
 
-    function ToggleInstance:Turn(newState: boolean?)
+    function ToggleInstance:Turn(newState: boolean?): ()
       self.State = newState or not self.State
       local SetterState = self.Cases[self.State](self.Locals)
       if SetterState ~= nil then
