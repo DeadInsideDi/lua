@@ -19,7 +19,8 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
-  local function GetPartOfModel(model: Model): BasePart | nil
+  local function GetPartOfModel(model: Model | nil): BasePart | nil
+    if not model then return nil end
     if model.PrimaryPart then return model.PrimaryPart end
     return model:FindFirstChildOfClass("BasePart")
   end
@@ -34,15 +35,12 @@ return (function()
 
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
-    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value, function()
+    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value * 2, function()
       if Character and MoveDirection.Magnitude > 0 then
-        local Root = GetPartOfModel(Character)
-        if Root then
-          local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
-          local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-          Character:TranslateBy(direction.Unit * Speed)
-          Root.CFrame = CFrame.new(Root.Position, Fwd)
-        end
+        local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
+        local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
+        -- Character:TranslateBy(direction.Unit * Speed)
+        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed) * Camera.CFrame.Rotation)
       end
     end)
   end
