@@ -48,8 +48,8 @@ return (function()
   Fly.Enabled = CreateValue(false, UpdateFly)
   Fly.Speed = CreateValue(20, UpdateFly)
 
-  RunService:UnbindFromRenderStep("FindCharacter")
-  RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
+  RunService:UnbindFromRenderStep("FlyFindCharacter")
+  RunService:BindToRenderStep("FlyFindCharacter", Enum.RenderPriority.Last.Value * 2, function()
     local Counts, MaxCount, PossibleCharacter = {}, 0, nil
     local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
     for _, Part in Parts do
