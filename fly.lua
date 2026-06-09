@@ -3,8 +3,6 @@ return (function()
 
   local InputService = game:GetService("UserInputService")
   local RunService = game:GetService("RunService")
-  local Players = game:GetService("Players")
-  local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
   local MoveDirection = Vector3.zero
 
