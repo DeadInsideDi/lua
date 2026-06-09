@@ -11,16 +11,18 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
-  local function GetPositionOfModelOrPart(instance: Instance): Vector3
-    local TargetPosition = nil
+  local function GetPositionAndCFrameOfModelOrPart(instance: Instance): Vector3
+    local TargetPosition, TargetCFrame = nil, nil
 
     if instance:IsA("BasePart") then
       TargetPosition = instance.Position
+      TargetCFrame = instance.CFrame
     elseif instance:IsA("Model") then
-      TargetPosition = instance:GetPivot().Position
+      TargetCFrame = Instance.new("Model"):GetPivot()
+      TargetPosition = TargetCFrame.Position
     end
 
-    return TargetPosition
+    return TargetPosition, TargetCFrame
   end
 
   RunService:UnbindFromRenderStep("TracersUpdatePosition")
@@ -29,13 +31,13 @@ return (function()
     for _, Profile in Profiles do
       for Target, Line in Profile.ManagedTargets do
         if not Target then continue end
-        local TargetPos = GetPositionOfModelOrPart(Target)
+        local TargetPos, TargetCFrame = GetPositionAndCFrameOfModelOrPart(Target)
         local Direction = FocusPos - TargetPos
         local Distance = Direction.Magnitude
         if Distance == 0 then continue end
 
         local worldCF = CFrame.lookAt(TargetPos, FocusPos)
-        Line.CFrame = Target.CFrame:Inverse() * worldCF
+        Line.CFrame = TargetCFrame:Inverse() * worldCF
         Line.Length = Distance
       end
     end
