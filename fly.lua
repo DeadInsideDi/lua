@@ -35,7 +35,7 @@ return (function()
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
     RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Last.Value * 2, function()
-      if Character then
+      if Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local d = (Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit * Speed
         -- Character:TranslateBy(Vector3.new(0,0,1) )
