@@ -46,7 +46,7 @@ return (function()
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(16, UpdateFly)
+  Fly.Speed = CreateValue(20, UpdateFly)
 
   RunService:UnbindFromRenderStep("FindCharacter")
   RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
