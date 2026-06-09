@@ -51,7 +51,7 @@ return (function()
     Profile.Thickness = CreateValue(5, Profile.UpdateAllStyles)
 
     local function ApplyStyle(line: LineHandleAdornment)
-      line.Enabled = Profile.Enabled.Value
+      line.Visible = Profile.Enabled.Value
       line.Color = Profile.Color.Value
       line.Transparency = Profile.Transparency.Value
       line.AlwaysOnTop = Profile.AlwaysOnTop.Value
