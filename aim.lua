@@ -8,7 +8,7 @@ return (function()
   local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
 
-  for _, Connection in ipairs(getgenv().AIM_RBX_CONNECTIONS or {}) do
+  for _, Connection in getgenv().AIM_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
   getgenv().AIM_RBX_CONNECTIONS = {}
@@ -34,10 +34,6 @@ return (function()
     return math.deg(math.acos(math.clamp(Dot, -1, 1)))
   end
 
-  local function GetDistance(toPos: Vector3)
-    return (Camera.Focus.Position - toPos).Magnitude
-  end
-
   local function GetHealthOfPlayer(player): number
     local Humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     return Humanoid and Humanoid.Health or 100
@@ -60,7 +56,6 @@ return (function()
     local DesiredCFrame = CFrame.lookAt(CameraCFrame.Position, position)
     Camera.CFrame = CameraCFrame:Lerp(DesiredCFrame, math.min(1, Aim.Speed.Value))
   end
-
   local function AimToPositionVirtualMouse(targetPos: Vector3): ()
     local Look = Camera.CFrame.LookVector
     local Dir = (targetPos - Camera.Focus.Position).Unit
@@ -102,7 +97,7 @@ return (function()
     local BestTarget = nil
     local SmallestScore = math.huge
 
-    for _, Player in ipairs(PlayersList) do
+    for _, Player in PlayersList do
       if Player == Client then continue end
       if Aim.TeamCheck.Value and IsSameTeam(Player) then continue end
 
@@ -113,7 +108,7 @@ return (function()
       if not Part then continue end
 
       local TargetPos = Part.Position
-      local Dist = GetDistance(TargetPos)
+      local Dist = (Camera.Focus.Position - TargetPos).Magnitude
       if Dist > Aim.MaxDistance.Value then continue end
 
       local AngleOffset = GetAngleOffset(TargetPos)
