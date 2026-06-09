@@ -9,8 +9,12 @@ return (function()
   end
   local CreateValue = getgenv().CreateCustomValue
 
+  local ChamsFolder = CoreGui:FindFirstChild("Chams_Folder")
+  if ChamsFolder then ChamsFolder:Destroy() end
+  ChamsFolder = Instance.new("Folder", CoreGui)
+  ChamsFolder.Name = "Chams_Folder"
+
   function Chams.CreateCham()
-    local PName = "Profile_"..tostring(#Profiles)
     local Profile = {}
     local ManagedTargets: {[Instance]: Highlight} = {}
     table.insert(Profiles, Profile)
@@ -43,8 +47,7 @@ return (function()
       if not (partOrModel:IsA("Model") or partOrModel:IsA("BasePart")) then return end
       if ManagedTargets[partOrModel] then return end
 
-      local Highlight = Instance.new("Highlight", CoreGui)
-      Highlight.Name = "ChamsHighlight_"..PName
+      local Highlight = Instance.new("Highlight", ChamsFolder)
       Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       Highlight.Adornee = partOrModel
 
@@ -69,7 +72,7 @@ return (function()
 
     function Profile.Clear(): ()
       for _, Highlight in pairs(ManagedTargets) do
-        if Highlight.Parent then Highlight:Destroy() end
+        if Highlight then Highlight:Destroy() end
       end
       table.clear(ManagedTargets)
     end
@@ -94,7 +97,8 @@ end)()
 -- Chams = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/chams.lua"))()
 
 -- EnableAll / DisableAll / CreateCham -V-
--- AddInstance(Instance) / Remove(Instance) / Clear / AddPlayer(Player)
+-- AddInstance(Instance) / AddPlayer(Player)
+-- Remove(Instance) / Clear
 
 -- Enabled: bool / FillColor: Color3 / FillTransparency: number
 -- OutlineColor: Color3 / OutlineTransparency: number
