@@ -34,10 +34,11 @@ return (function()
 
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
-    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Last.Value, function()
+    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value, function()
       if Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
-        Character:TranslateBy((Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit * Speed)
+        local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
+        Character:TranslateBy(direction.Unit * Speed)
       end
     end)
   end
@@ -71,8 +72,8 @@ return (function()
   }
 
   local function UpdateMoveDirection()
-    local x = math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left]) - math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right])
-    local z = math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up]) - math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down])
+    local x = math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up]) - math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down])
+    local z = math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right]) - math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left])
     MoveDirection = Vector3.new(x, 0, z)
   end
 
