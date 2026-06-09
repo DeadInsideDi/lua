@@ -36,9 +36,13 @@ return (function()
     if Part then Part.Anchored = true end
     RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value, function()
       if Character and MoveDirection.Magnitude > 0 then
-        local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
-        local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed, Fwd))
+        local Root = GetPartOfModel(Character)
+        if Root then
+          local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
+          local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
+          Character:TranslateBy(direction.Unit * Speed)
+          Root.CFrame = CFrame.lookAt(Root.Position, Fwd)
+        end
       end
     end)
   end
