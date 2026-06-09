@@ -28,9 +28,9 @@ return (function()
   end
 
   local function UpdateFly()
-    if not getgenv().Character then return end
     local Part = GetPartOfModel(getgenv().Character)
-    if Part then Part.Anchored = false end
+    if not Part then return end
+    Part.Anchored = false
     Part.AssemblyLinearVelocity = Vector3.zero
 
     RunService:UnbindFromRenderStep("UpdateFly")
