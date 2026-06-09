@@ -53,6 +53,7 @@ return (function()
 
     task.delay(Debugger.LifeTime.Value, function()
       if Label and Label.Parent then Label:Destroy() end
+      ScreenLabel = nil
     end)
 
     ScreenLabel = Label
