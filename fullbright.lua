@@ -33,7 +33,7 @@ return (function()
 
   FullBright.Enabled = CreateValue(false, UpdateLighting)
   FullBright.Ambient = CreateValue(Color3.new(1, 1, 1), UpdateLighting)
-  FullBright.Brightness = CreateValue(5, UpdateLighting)
+  FullBright.Brightness = CreateValue(10, UpdateLighting)
   FullBright.GlobalShadows = CreateValue(false, UpdateLighting)
 
   table.insert(getgenv().FULLBRIGHT_RBX_CONNECTIONS, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
