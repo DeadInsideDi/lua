@@ -5,7 +5,7 @@ return (function()
   local RunService = game:GetService("RunService")
   local MoveDirection = Vector3.zero
 
-  for _, Connection in ipairs(getgenv().SPEEDHACK_RBX_CONNECTIONS or {}) do
+  for _, Connection in getgenv().SPEEDHACK_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
   getgenv().SPEEDHACK_RBX_CONNECTIONS = {}
