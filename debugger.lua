@@ -59,7 +59,7 @@ return (function()
     return ScreenLabel
   end
 
-  local function GetPositionOfModelOrPart(modelOrPart: Instance)
+  local function GetPositionOfModelOrPart(modelOrPart: Instance): Vector3
     local TargetPosition = nil
 
     if modelOrPart:IsA("BasePart") then
@@ -75,7 +75,7 @@ return (function()
     if parent == nil then parent = workspace end
     local Instances = {}
 
-    for _, Ins in ipairs(parent:GetDescendants()) do
+    for _, Ins in parent:GetDescendants() do
       if not (Ins:IsA("BasePart") or Ins:IsA("Model")) then continue end
       if (GetPositionOfModelOrPart(Ins) - Camera.Focus.Position).Magnitude > distance then continue end
       if IsCharacterPart(Ins) then continue end
@@ -89,7 +89,7 @@ return (function()
     local Instances = Debugger.FindCloseInstances(distance, parent)
     local Models, Parts = {}, {}
 
-    for _, Ins in pairs(Instances) do
+    for _, Ins in Instances do
       if Ins:IsA("Model") then
         table.insert(Models, Ins)
       else
@@ -98,20 +98,20 @@ return (function()
     end
 
     print("=== Models:", #Models, "===========")
-    for _, model in pairs(Models) do print(model.Name, model:GetFullName()) end
+    for _, model in Models do print(model.Name, model:GetFullName()) end
     print("=== Parts:", #Parts, "===========")
-    for _, part in pairs(Parts) do print(part.Name, part:GetFullName()) end
+    for _, part in Parts do print(part.Name, part:GetFullName()) end
   end
 
-  local function GetRandomStudsOffset()
+  local function GetRandomStudsOffset(): Vector3
     return Vector3.new(math.random(0, 50)/100,math.random(0, 200)/100,math.random(0, 100)/1000)
   end
 
-  local function GetRandomColor()
+  local function GetRandomColor(): Color3
     return Color3.fromHSV(math.random(0, 359)/360, 1, 1)
   end
 
-  local function CreateBillboard(parent: Instance, text: string, color: Color3, size: number)
+  local function CreateBillboard(parent: Instance, text: string, color: Color3, size: number): BillboardGui
     local Billboard = Instance.new("BillboardGui", CoreGui)
     Billboard.Name = "Debug"
     Billboard.Size = UDim2.new(size or 1.4, 0, size or 1.4, 0)
@@ -135,10 +135,10 @@ return (function()
     return Billboard
   end
 
-  function Debugger.MarkPrintCloseParts(distance: number, parent: Instance, color: Color3)
+  function Debugger.MarkPrintCloseParts(distance: number, parent: Instance, color: Color3): ()
     local Instances = Debugger.FindCloseInstances(distance, parent)
 
-    for _, Ins in pairs(Instances) do
+    for _, Ins in Instances do
       if not BillboardedInstances[Ins:GetFullName()] then
         CreateBillboard(Ins, Ins.Name, color)
         BillboardedInstances[Ins:GetFullName()] = Ins
@@ -146,7 +146,7 @@ return (function()
     end
   end
 
-  function Debugger.ShowNameOfLookedAtPart()
+  function Debugger.ShowNameOfLookedAtPart(): string
     local Label = GetOrCreateScreenLabel()
     local RayParams = RaycastParams.new()
     RayParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -203,7 +203,7 @@ return (function()
       local P, Nxt = {}, lvl+1
       local Pre = indent and string.rep(indent, Nxt) or ""
 
-      for _, Key in ipairs(Keys) do
+      for _, Key in Keys do
         P[#P+1] = Pre..string.format(keyValueFormat, Key, Serialize(value[Key],Nxt))
       end
 
