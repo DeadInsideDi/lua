@@ -25,6 +25,7 @@ return (function()
   end
 
   local function UpdateFly()
+    if not Character then return end
     local Part = GetPartOfModel(Character)
     if Part then Part.Anchored = false end
 
@@ -42,7 +43,7 @@ return (function()
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(30, UpdateFly)
+  Fly.Speed = CreateValue(10, UpdateFly)
 
   RunService:UnbindFromRenderStep("FindCharacter")
   RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
@@ -50,7 +51,6 @@ return (function()
     local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
     for _, Part in Parts do
       local Model = Part:FindFirstAncestorOfClass("Model")
-      print(Part, Model)
       if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
     end
 
