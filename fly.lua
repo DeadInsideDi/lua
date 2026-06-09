@@ -50,6 +50,7 @@ return (function()
     local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
     for _, Part in Parts do
       local Model = Part:FindFirstAncestorOfClass("Model")
+      print(Part, Model)
       if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
     end
 
