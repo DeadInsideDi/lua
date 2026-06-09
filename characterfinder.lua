@@ -21,3 +21,4 @@ return (function ()
     getgenv().Character = PossibleCharacter
   end)
 end)()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/characterfinder.lua"))()
