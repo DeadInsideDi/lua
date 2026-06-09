@@ -55,12 +55,14 @@ return (function()
       end
 
       for Model, Count in Counts do
+        print(Model)
         if Count > MaxCount then
           MaxCount = Count
           PossibleCharacter = Model
         end
       end
       Character = PossibleCharacter
+
     end
   end)
 
