@@ -41,7 +41,7 @@ return (function()
           local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
           local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
           Character:TranslateBy(direction.Unit * Speed)
-          Root.CFrame = CFrame.lookAt(Root.Position, Fwd)
+          Root.CFrame = CFrame.new(Root.Position, Fwd)
         end
       end
     end)
