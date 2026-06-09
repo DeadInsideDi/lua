@@ -1,23 +1,18 @@
 return (function()
   local PathFinder = {}
 
+  local CoreGui = game:GetService("CoreGui")
   local PathfindingService = game:GetService("PathfindingService")
-  local Players = game:GetService("Players")
-  local Client = Players.LocalPlayer
   local Camera = workspace.CurrentCamera
 
-  local RouteFolder = workspace:FindFirstChild("ActiveRoutes")
-  if RouteFolder ~= nil then RouteFolder:Destroy() end
-
-  RouteFolder = Instance.new("Folder", workspace)
-  RouteFolder.Name = "ActiveRoutes"
+  local PathFinderFolder = CoreGui:FindFirstChild("PathFinder_Folder")
+  if PathFinderFolder then PathFinderFolder:Destroy() end
+  PathFinderFolder = Instance.new("Folder", CoreGui)
+  PathFinderFolder.Name = "PathFinder_Folder"
 
   type Settings = {
-    Material: Enum.Material,
     Color: Color3,
     ClosestColor: Color3,
-    Width: number,
-    Height: number,
     Length: number,
     MinDistance: number,
     UpdateTime: number,
@@ -25,19 +20,19 @@ return (function()
   }
   type ActiveTrack = {
     Settings: Settings,
-    Parts: {Part}
+    Lines: {LineHandleAdornment}
   }
 
   local PathToAgentParams = {}
   local ActiveTracks: {[Vector3]: ActiveTrack} = {}
   local ShortestTrackTargetPosition: Vector3
 
-  local function GetShortestTrackTargetPosition()
+  local function GetShortestTrackTargetPosition(): Vector3
     local MinParts = math.huge
     local ShortestPosition = nil
 
-    for Position, Track in pairs(ActiveTracks) do
-      local partCount = #Track.Parts
+    for Position, Track in ActiveTracks do
+      local partCount = #Track.Lines
       if partCount < MinParts then
         MinParts = partCount
         ShortestPosition = Position
@@ -47,7 +42,7 @@ return (function()
     return ShortestPosition
   end
 
-  local function ComputePathWithFallback(path: Path, startPos: Vector3, baseTarget: Vector3)
+  local function ComputePathWithFallback(path: Path, startPos: Vector3, baseTarget: Vector3): boolean
     local MaxAttempts, CurrentAttempt = 10, 0
     local StepSize, HeightStep = 4, 3
 
@@ -67,35 +62,33 @@ return (function()
     return false
   end
 
-  local function CreateTrack(path: Path, targetPosition: Vector3, config)
+  local function CreateTrack(path: Path, targetPosition: Vector3, config): ActiveTrack
     if config == nil then config = {} end
     local AgentParams = PathToAgentParams[path]
 
     local Settings = {
-      Material = config and config.Material or Enum.Material.Neon,
       Color = config and config.Color or Color3.fromRGB(255, 255, 255),
       ClosestColor = config and config.ClosestColor or Color3.fromRGB(0, 255, 0),
-      Width = config and config.Width or AgentParams.WaypointSpacing / 4,
-      Height = config and config.Height or AgentParams.WaypointSpacing / 10,
       Length = config and config.Length or AgentParams.WaypointSpacing,
       MinDistance = config and config.MinDistance or (AgentParams.AgentRadius + AgentParams.WaypointSpacing) * 4,
       UpdateTime = config and config.UpdateTime or 0.25,
       TransparencyFunction = config and config.TransparencyFunction or (function(x) return x/50 end)
     }
 
-    local ActiveTrack = { Settings = Settings, Parts = {} }
+    local ActiveTrack = { Settings = Settings, Lines = {} }
     ActiveTracks[targetPosition] = ActiveTrack
     return ActiveTrack
   end
 
-  local function RenderingPath(path: Path, targetPos: Vector3)
+  local function RenderingPath(path: Path, targetPos: Vector3): boolean
     local ActiveTrack = ActiveTracks[targetPos]
     local Settings = ActiveTrack.Settings
     task.wait(Settings.UpdateTime)
+
     local CameraPos = Camera.Focus.Position
 
     if Settings.MinDistance > (CameraPos - targetPos).Magnitude then
-      for _, Part in ipairs(ActiveTrack.Parts) do Part:Destroy() end
+      for _, Part in ActiveTrack.Lines do Part:Destroy() end
       ActiveTracks[targetPos] = nil
       return true
     end
@@ -104,43 +97,40 @@ return (function()
     if not HasPath then return end
 
     local Waypoints = path:GetWaypoints()
-    local PartSize = Vector3.new(Settings.Width, Settings.Height, Settings.Length)
-    local PartColor = ShortestTrackTargetPosition == targetPos and Settings.ClosestColor or Settings.Color
-    local NewParts = {}
+    local LineColor = ShortestTrackTargetPosition == targetPos and Settings.ClosestColor or Settings.Color
+    local NewLines = {}
 
-    for Index, Waypoint in ipairs(Waypoints) do
+    for Index, Waypoint in Waypoints do
       local PartDistance = (Waypoint.Position - CameraPos).Magnitude
       if PartDistance < Settings.MinDistance then return end
 
-      local Part = Instance.new("Part", RouteFolder)
-      Part.Size = PartSize
-      Part.Anchored = true
-      Part.CanCollide = false
-      Part.CanTouch = false
-      Part.CanQuery = false
-      Part.Material = Settings.Material
-      Part.Color = PartColor
-      Part.Transparency = math.clamp(Settings.TransparencyFunction(PartDistance), 0, 1)
+      local Line = Instance.new("LineHandleAdornment", PathFinderFolder)
+      Line.Adornee = workspace
+      Line.AlwaysOnTop = true
+      Line.ZIndex = 1
+      Line.Color3 = LineColor
+      Line.Length = Settings.Length
+      Line.Transparency = math.clamp(Settings.TransparencyFunction(PartDistance), 0, 1)
 
       local NextWaypoint = Waypoints[Index + 1]
       if NextWaypoint then
-        Part.CFrame = CFrame.lookAt(Waypoint.Position + Vector3.new(0, Settings.Height, 0), NextWaypoint.Position + Vector3.new(0, Settings.Height, 0))
+        Line.CFrame = CFrame.lookAt(Waypoint.Position, NextWaypoint.Position)
       end
-      table.insert(NewParts, Part)
+      table.insert(NewLines, Line)
     end
 
-    for _, Part in ipairs(ActiveTrack.Parts) do Part:Destroy() end
-    ActiveTrack.Parts = NewParts
+    for _, Part in ActiveTrack.Lines do Part:Destroy() end
+    ActiveTrack.Lines = NewLines
   end
 
-  local function RenderingPathLoop(path: Path, targetPosition: Vector3)
+  local function RenderingPathLoop(path: Path, targetPosition: Vector3): ()
     while ActiveTracks[targetPosition] ~= nil do
       local IsFinished = RenderingPath(path, targetPosition)
       if IsFinished then break end
     end
   end
 
-  function PathFinder.CreatePath(agentParams)
+  function PathFinder.CreatePath(agentParams): Path
     local FinalParams = {
       AgentRadius = 2,
       AgentHeight = 5,
@@ -151,7 +141,7 @@ return (function()
     }
 
     if agentParams then
-      for k, v in pairs(agentParams) do FinalParams[k] = v end
+      for k, v in agentParams do FinalParams[k] = v end
     end
 
     local Path = PathfindingService:CreatePath(FinalParams)
@@ -159,21 +149,21 @@ return (function()
     return Path
   end
 
-  function PathFinder.RenderPath(path: Path, targetPosition: Vector3, config)
+  function PathFinder.RenderPath(path: Path, targetPosition: Vector3, config): ()
     CreateTrack(path, targetPosition, config)
     RenderingPath(path, targetPosition)
     ActiveTracks[targetPosition] = nil
   end
 
-  function PathFinder.RenderPathLoop(path: Path, targetPosition: Vector3, config)
+  function PathFinder.RenderPathLoop(path: Path, targetPosition: Vector3, config): ()
     CreateTrack(path, targetPosition, config)
     task.spawn(function()
       RenderingPathLoop(path, targetPosition)
     end)
   end
 
-  function PathFinder.Clear()
-    RouteFolder:ClearAllChildren()
+  function PathFinder.Clear(): ()
+    PathFinderFolder:ClearAllChildren()
     ActiveTracks = {}
   end
 
