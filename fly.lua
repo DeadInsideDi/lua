@@ -36,17 +36,17 @@ return (function()
 
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
-    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value * 2, function()
+    RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value * 2, function(dt)
       if Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed) * Camera.CFrame.Rotation)
+        Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed * dt) * Camera.CFrame.Rotation)
       end
     end)
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(1, UpdateFly)
+  Fly.Speed = CreateValue(16, UpdateFly)
 
   RunService:UnbindFromRenderStep("FindCharacter")
   RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
