@@ -3,7 +3,7 @@ return (function()
 
   local Lighting = game:GetService("Lighting")
 
-  for _, Connection in ipairs(getgenv().FULLBRIGHT_RBX_CONNECTIONS or {}) do
+  for _, Connection in getgenv().FULLBRIGHT_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
   getgenv().FULLBRIGHT_RBX_CONNECTIONS = {}
@@ -17,7 +17,7 @@ return (function()
   local BaseBrightness = Lighting.Brightness
   local BaseGlobalShadows = Lighting.GlobalShadows
 
-  local function UpdateLighting()
+  local function UpdateLighting(): ()
     local IsEnabled = FullBright.Enabled.Value or false
 
     if IsEnabled then
