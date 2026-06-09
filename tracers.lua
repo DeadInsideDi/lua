@@ -52,7 +52,7 @@ return (function()
 
     local function ApplyStyle(line: LineHandleAdornment)
       line.Visible = Profile.Enabled.Value
-      line.Color = Profile.Color.Value
+      line.Color3 = Profile.Color.Value
       line.Transparency = Profile.Transparency.Value
       line.AlwaysOnTop = Profile.AlwaysOnTop.Value
       line.Thickness = Profile.Thickness.Value
