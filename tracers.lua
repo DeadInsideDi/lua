@@ -69,9 +69,7 @@ return (function()
     end
 
     function Profile.AddInstance(instance: Instance)
-      if not instance:IsA("BasePart") and not instance:IsA("Model") then
-        return print("BasePart or Model expected!")
-      end
+      if not instance:IsA("BasePart") and not instance:IsA("Model") then return end
       if Profile.ManagedTargets[instance] then return end
 
       local Line = Instance.new("LineHandleAdornment", TracerFolders)
@@ -80,7 +78,6 @@ return (function()
 
       ApplyStyle(Line)
       Profile.ManagedTargets[instance] = Line
-      return Profile.ManagedTargets[instance]
     end
 
     function Profile.AddPosition(pos: Vector3)
@@ -93,17 +90,19 @@ return (function()
       return Profile.AddInstance(Part)
     end
 
-    function Profile.AddPlayer(targetPlayer: Player)
-      if targetPlayer == nil then return end
-      if Profile.AddInstance(targetPlayer.Character or targetPlayer.CharacterAdded:Wait()) ~= nil then
-        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, targetPlayer.CharacterAdded:Connect(Profile.AddInstance))
-        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, targetPlayer.CharacterRemoving:Connect(Profile.RemoveInstance))
+    function Profile.AddPlayer(player: Player)
+      if player.Character then
+        Profile.AddInstance(player.Character)
+      end
+      if Profile.AddInstance(player.Character or player.CharacterAdded:Wait()) ~= nil then
+        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterAdded:Connect(Profile.AddInstance))
+        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterRemoving:Connect(Profile.RemoveInstance))
       end
     end
 
     function Profile.RemoveInstance(instance: Instance): ()
-      local Data = Profile.ManagedTargets[instance]
-      if Data and Data.Line then Data.Line:Destroy() end
+      local Line = Profile.ManagedTargets[instance]
+      if Line then Line:Destroy() end
       Profile.ManagedTargets[instance] = nil
     end
 
