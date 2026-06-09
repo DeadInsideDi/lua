@@ -94,10 +94,9 @@ return (function()
       if player.Character then
         Profile.AddInstance(player.Character)
       end
-      if Profile.AddInstance(player.Character or player.CharacterAdded:Wait()) ~= nil then
-        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterAdded:Connect(Profile.AddInstance))
-        table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterRemoving:Connect(Profile.RemoveInstance))
-      end
+
+      table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterAdded:Connect(Profile.AddInstance))
+      table.insert(getgenv().TRACERS_RBX_CONNECTIONS, player.CharacterRemoving:Connect(Profile.RemoveInstance))
     end
 
     function Profile.RemoveInstance(instance: Instance): ()
