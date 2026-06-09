@@ -46,24 +46,20 @@ return (function()
 
   RunService:UnbindFromRenderStep("FindCharacter")
   RunService:BindToRenderStep("FindCharacter", Enum.RenderPriority.Last.Value * 2, function()
-    if Fly.Enabled.Value then
-      local Counts, MaxCount, PossibleCharacter = {}, 0, nil
-      local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
-      for _, Part in Parts do
-        local Model = Part:FindFirstAncestorOfClass("Model")
-        if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
-      end
-
-      for Model, Count in Counts do
-        print(Model)
-        if Count > MaxCount then
-          MaxCount = Count
-          PossibleCharacter = Model
-        end
-      end
-      Character = PossibleCharacter
-
+    local Counts, MaxCount, PossibleCharacter = {}, 0, nil
+    local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
+    for _, Part in Parts do
+      local Model = Part:FindFirstAncestorOfClass("Model")
+      if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
     end
+
+    for Model, Count in Counts do
+      if Count > MaxCount then
+        MaxCount = Count
+        PossibleCharacter = Model
+      end
+    end
+    Character = PossibleCharacter
   end)
 
   local Keys = {
