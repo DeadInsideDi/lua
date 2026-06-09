@@ -38,7 +38,8 @@ return (function()
       if Character then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         -- (Fwd * MoveDirection:Dot(Fwd) + Right * MoveDirection:Dot(Right)).Unit
-        Character:TranslateBy(Vector3.new(0,0,1) * Speed)
+        -- Character:TranslateBy(Vector3.new(0,0,1) * Speed)
+        print(Character)
       end
     end)
   end
