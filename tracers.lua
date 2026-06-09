@@ -29,7 +29,6 @@ return (function()
     end
   end)
 
-
   for _, Connection in getgenv().TRACERS_RBX_CONNECTIONS or {} do
     Connection:Disconnect()
   end
