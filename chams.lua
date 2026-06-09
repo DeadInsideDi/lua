@@ -31,7 +31,7 @@ return (function()
     end
 
     local function UpdateAllStyles()
-      for Target, Highlight in pairs(Profile.ManagedTargets) do
+      for Target, Highlight in Profile.ManagedTargets do
         if Target.Parent and Highlight.Parent then
           ApplyStyle(Highlight)
         else
