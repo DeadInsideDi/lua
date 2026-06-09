@@ -58,8 +58,6 @@ return (function()
   end
   local function AimToPositionVirtualMouse(targetPos: Vector3): ()
     local Look = Camera.CFrame.LookVector
-    print("Camera.Focus.Position", Camera.Focus.Position)
-    print("targetPos", targetPos)
     local Dir = (targetPos - Camera.Focus.Position).Unit
 
     local YawDiff = (math.atan2(Look.X, Look.Z) - math.atan2(Dir.X, Dir.Z) + math.pi) % (2 * math.pi) - math.pi
