@@ -4,9 +4,12 @@ return (function ()
   getgenv().CharacterFinderRunned = true
 
   RunService:UnbindFromRenderStep("CharacterFinder")
-  RunService:BindToRenderStep("CharacterFinder", Enum.RenderPriority.Last.Value * 2, function()
+  RunService:BindToRenderStep("CharacterFinder", Enum.RenderPriority.Last.Value, function()
     local Counts, MaxCount, PossibleCharacter = {}, 0, nil
-    local Parts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 1)
+    local Parts = workspace:GetPartBoundsInRadius(Camera.CFrame.Position, 0.1)
+    local FocusParts = workspace:GetPartBoundsInRadius(Camera.Focus.Position, 0.1)
+    table.move(FocusParts, 1, #FocusParts, #Parts + 1, Parts)
+
     for _, Part in Parts do
       local Model = Part:FindFirstAncestorOfClass("Model")
       if Model then Counts[Model] = (Counts[Model] or 0) + 1 end
@@ -18,6 +21,7 @@ return (function ()
         PossibleCharacter = Model
       end
     end
+    print("PossibleCharacter", PossibleCharacter)
     getgenv().Character = PossibleCharacter
   end)
 end)()
