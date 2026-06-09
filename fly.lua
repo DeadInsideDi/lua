@@ -47,7 +47,7 @@ return (function()
   end
 
   Fly.Enabled = CreateValue(false, UpdateFly)
-  Fly.Speed = CreateValue(20, UpdateFly)
+  Fly.Speed = CreateValue(50, UpdateFly)
 
   local Keys = {
     [Enum.KeyCode.W] = 0, [Enum.KeyCode.Up] = 0,
