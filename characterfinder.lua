@@ -21,7 +21,6 @@ return (function ()
         PossibleCharacter = Model
       end
     end
-    print("PossibleCharacter", PossibleCharacter)
     getgenv().Character = PossibleCharacter
   end)
 end)()
