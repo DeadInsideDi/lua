@@ -29,6 +29,7 @@ return (function()
     if not Character then return end
     local Part = GetPartOfModel(Character)
     if Part then Part.Anchored = false end
+    Part.AssemblyLinearVelocity = Vector3.zero
 
     RunService:UnbindFromRenderStep("UpdateFly")
     if not Fly.Enabled.Value then return end
@@ -39,7 +40,6 @@ return (function()
       if Character and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
-        -- Character:TranslateBy(direction.Unit * Speed)
         Character:PivotTo(CFrame.new(Character:GetPivot().Position + direction.Unit * Speed) * Camera.CFrame.Rotation)
       end
     end)
