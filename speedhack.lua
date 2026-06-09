@@ -1,77 +1,85 @@
 return (function()
   local SpeedHack = {}
 
+  local InputService = game:GetService("UserInputService")
   local RunService = game:GetService("RunService")
-  local Players = game:GetService("Players")
-  local Client = Players.LocalPlayer
-  local Character = Client.Character or Client.CharacterAdded:Wait()
-  local Humanoid = Character:WaitForChild("Humanoid")
+  local MoveDirection = Vector3.zero
 
   for _, Connection in ipairs(getgenv().SPEEDHACK_RBX_CONNECTIONS or {}) do
     Connection:Disconnect()
   end
   getgenv().SPEEDHACK_RBX_CONNECTIONS = {}
 
-  local function FindValueInstance(vtype: string, name: string, value: any)
-    local Value = script:FindFirstChild(name)
+  if not getgenv().CharacterFinderRunned then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/characterfinder.lua"))()
+  end
+  if not getgenv().CreateCustomValue then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/createcustomvalue.lua"))()
+  end
+  local CreateValue = getgenv().CreateCustomValue
 
-    if Value == nil then
-      Value = Instance.new(vtype.."Value", script)
-      Value.Name = name
-      Value.Value = value
-    end
-
-    return Value
+  local function GetPartOfModel(model: Model | nil): BasePart | nil
+    if not model then return nil end
+    if model.PrimaryPart then return model.PrimaryPart end
+    return model:FindFirstChildOfClass("BasePart")
   end
 
-  local EnabledValue = FindValueInstance("Bool", "SpeedHack_Enabled", false)
-  local SpeedValue = FindValueInstance("Number", "SpeedHack_Speed", 20)
+  local function ImpulseRun(speed: number): ()
+    local Char = getgenv().Character
+    local Part = GetPartOfModel(Char)
+    if Part and MoveDirection.Magnitude > 0  then
+      Part:ApplyImpulse(MoveDirection * speed)
+    end
+  end
+  local function TranslateRun(speed: number): ()
+    local Char = getgenv().Character
+    if Char and MoveDirection.Magnitude > 0  then
+      Char:TranslateBy(MoveDirection * speed)
+    end
+  end
 
   local function UpdateSpeed()
-    local TargetSpeed = EnabledValue.Value and SpeedValue.Value or 0
+    RunService:UnbindFromRenderStep("SpeedHackBoost")
+    if not SpeedHack.Enabled.Value then return end
 
-    RunService:UnbindFromRenderStep("Boost")
-    RunService:BindToRenderStep("Boost", Enum.RenderPriority.Character.Value, function(dt)
-      if Humanoid == nil then return end
-      local Dir = Humanoid.MoveDirection
-      if Dir.Magnitude > 0 then Character:TranslateBy(TargetSpeed * dt * Dir) end
+    local Speed = SpeedHack.Speed.Value
+    local RunFunction = SpeedHack.UseTranslate.Value and TranslateRun or ImpulseRun
+    RunService:BindToRenderStep("SpeedHackBoost", Enum.RenderPriority.Character.Value, function(dt)
+      RunFunction(Speed * dt)
     end)
   end
 
-  EnabledValue.Changed:Connect(UpdateSpeed)
-  SpeedValue.Changed:Connect(UpdateSpeed)
+  SpeedHack.Enabled = CreateValue(false, UpdateSpeed)
+  SpeedHack.Speed = CreateValue(20, UpdateSpeed)
+  SpeedHack.UseTranslate = CreateValue(true, UpdateSpeed)
 
-  function SpeedHack.SetEnabled(value: boolean): ()
-    EnabledValue.Value = value or false
+  local Keys = {
+    [Enum.KeyCode.W] = 0, [Enum.KeyCode.Up] = 0,
+    [Enum.KeyCode.S] = 0, [Enum.KeyCode.Down] = 0,
+    [Enum.KeyCode.A] = 0, [Enum.KeyCode.Left] = 0,
+    [Enum.KeyCode.D] = 0, [Enum.KeyCode.Right] = 0
+  }
+
+  local function UpdateMoveDirection(): ()
+    local x = math.max(Keys[Enum.KeyCode.W], Keys[Enum.KeyCode.Up]) - math.max(Keys[Enum.KeyCode.S], Keys[Enum.KeyCode.Down])
+    local z = math.max(Keys[Enum.KeyCode.D], Keys[Enum.KeyCode.Right]) - math.max(Keys[Enum.KeyCode.A], Keys[Enum.KeyCode.Left])
+    MoveDirection = Vector3.new(x, 0, z)
   end
 
-  function SpeedHack.Enable(): ()
-    SpeedHack.SetEnabled(true)
-  end
+  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputBegan:Connect(function(input, processed)
+    if processed or not Keys[input.KeyCode] then return end
+    Keys[input.KeyCode] = 1
+    UpdateMoveDirection()
+  end))
 
-  function SpeedHack.Disable(): ()
-    SpeedHack.SetEnabled(false)
-  end
-
-  function SpeedHack.ChangeSpeed(numberOrFunc: number | (number) -> number): ()
-    if type(numberOrFunc) == "function" then
-      SpeedValue.Value = numberOrFunc(SpeedValue.Value) or SpeedValue.Value
-    else
-      SpeedValue.Value = numberOrFunc or SpeedValue.Value
-    end
-  end
-
-  local function setup(newCharacter: Model)
-    Character = newCharacter
-    Humanoid = Character:WaitForChild("Humanoid")
-    UpdateSpeed()
-  end
-
-  setup(Character)
-  getgenv().SPEEDHACK_RBX_CONNECTION = Client.CharacterAdded:Connect(setup)
+  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputEnded:Connect(function(input)
+    if not Keys[input.KeyCode] then return end
+    Keys[input.KeyCode] = 0
+    UpdateMoveDirection()
+  end))
 
   return SpeedHack
 end)()
 -- SpeedHack = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/speedhack.lua"))()
 
--- SetEnabled(bool) / Enable / Disable / ChangeSpeed(number | func)
+-- Enabled: bool / Speed: number / UseTranslate: bool
