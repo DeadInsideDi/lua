@@ -27,13 +27,13 @@ return (function()
   local function ImpulseRun(speed: number): ()
     local Char = getgenv().Character
     local Part = GetPartOfModel(Char)
-    if Part and MoveDirection.Magnitude > 0  then
+    if Part then
       Part:ApplyImpulse(MoveDirection * speed)
     end
   end
   local function TranslateRun(speed: number): ()
     local Char = getgenv().Character
-    if Char and MoveDirection.Magnitude > 0  then
+    if Char then
       Char:TranslateBy(MoveDirection * speed)
     end
   end
@@ -45,7 +45,9 @@ return (function()
     local Speed = SpeedHack.Speed.Value
     local RunFunction = SpeedHack.UseTranslate.Value and TranslateRun or ImpulseRun
     RunService:BindToRenderStep("SpeedHackBoost", Enum.RenderPriority.Character.Value, function(dt)
-      RunFunction(Speed * dt)
+      if MoveDirection.Magnitude > 0 then
+        RunFunction(Speed * dt)
+      end
     end)
   end
 
