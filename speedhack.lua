@@ -3,6 +3,7 @@ return (function()
 
   local InputService = game:GetService("UserInputService")
   local RunService = game:GetService("RunService")
+  local Camera = workspace.CurrentCamera
   local MoveDirection = Vector3.zero
 
   for _, Connection in getgenv().SPEEDHACK_RBX_CONNECTIONS or {} do
@@ -24,21 +25,21 @@ return (function()
     return model:FindFirstChildOfClass("BasePart")
   end
 
-  local function ImpulseRun(speed: number): ()
+  local function ImpulseRun(direction: Vector3): ()
     local Char = getgenv().Character
     local Part = GetPartOfModel(Char)
     if Part then
-      Part:ApplyImpulse(MoveDirection * speed)
+      Part:ApplyImpulse(direction)
     end
   end
-  local function TranslateRun(speed: number): ()
+  local function TranslateRun(direction: Vector3): ()
     local Char = getgenv().Character
     if Char then
-      Char:TranslateBy(MoveDirection * speed)
+      Char:TranslateBy(direction)
     end
   end
 
-  local function UpdateSpeed()
+  local function UpdateSpeed(): ()
     RunService:UnbindFromRenderStep("SpeedHackBoost")
     if not SpeedHack.Enabled.Value then return end
 
@@ -46,7 +47,9 @@ return (function()
     local RunFunction = SpeedHack.UseTranslate.Value and TranslateRun or ImpulseRun
     RunService:BindToRenderStep("SpeedHackBoost", Enum.RenderPriority.Character.Value, function(dt)
       if MoveDirection.Magnitude > 0 then
-        RunFunction(Speed * dt)
+        local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
+        local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
+        RunFunction(Speed * dt * direction)
       end
     end)
   end
