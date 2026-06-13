@@ -27,21 +27,23 @@ return (function()
 
   local function UpdateFly()
     local Part = GetPartOfModel(getgenv().Character)
+    print(Fly.Enabled.Value, getgenv().Character, Part)
     if not Part then return end
     Part.Anchored = false
     Part.AssemblyLinearVelocity = Vector3.zero
 
     RunService:UnbindFromRenderStep("UpdateFly")
     if not Fly.Enabled.Value then return end
-
     local Speed = Fly.Speed.Value
     if Part then Part.Anchored = true end
+    print(Fly.Enabled.Value, Part)
     RunService:BindToRenderStep("UpdateFly", Enum.RenderPriority.Character.Value * 2, function(dt)
       local Char = getgenv().Character
       if Char and MoveDirection.Magnitude > 0 then
         local Fwd, Right = Camera.CFrame.LookVector, Camera.CFrame.RightVector
         local direction = (Fwd * MoveDirection.X) + (Right * MoveDirection.Z)
         Char:PivotTo(CFrame.new(Char:GetPivot().Position + direction.Unit * Speed * dt) * Camera.CFrame.Rotation)
+        print('PIVOTED TO', Char)
       end
     end)
   end
