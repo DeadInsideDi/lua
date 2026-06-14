@@ -71,13 +71,13 @@ return (function()
     MoveDirection = Vector3.new(x, 0, z)
   end
 
-  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputBegan:Connect(function(input, processed)
+  table.insert(getgenv().SPEEDHACK_RBX_CONNECTIONS, InputService.InputBegan:Connect(function(input, processed)
     if processed or not Keys[input.KeyCode] then return end
     Keys[input.KeyCode] = 1
     UpdateMoveDirection()
   end))
 
-  table.insert(getgenv().FLY_RBX_CONNECTIONS, InputService.InputEnded:Connect(function(input)
+  table.insert(getgenv().SPEEDHACK_RBX_CONNECTIONS, InputService.InputEnded:Connect(function(input)
     if not Keys[input.KeyCode] then return end
     Keys[input.KeyCode] = 0
     UpdateMoveDirection()
