@@ -38,14 +38,17 @@ return (function()
 
   table.insert(getgenv().FULLBRIGHT_RBX_CONNECTIONS, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
     if not FullBright.Enabled.Value and Lighting.Ambient ~= BaseAmbient then BaseAmbient = Lighting.Ambient end
+    if FullBright.Enabled.Value and Lighting.Ambient ~= FullBright.Ambient.Value then Lighting.Ambient = FullBright.Ambient.Value end
   end))
 
   table.insert(getgenv().FULLBRIGHT_RBX_CONNECTIONS, Lighting:GetPropertyChangedSignal("GlobalShadows"):Connect(function()
     if not FullBright.Enabled.Value and Lighting.GlobalShadows ~= BaseGlobalShadows then BaseGlobalShadows = Lighting.GlobalShadows end
+    if FullBright.Enabled.Value and Lighting.GlobalShadows ~= FullBright.GlobalShadows.Value then Lighting.GlobalShadows = FullBright.GlobalShadows.Value end
   end))
 
   table.insert(getgenv().FULLBRIGHT_RBX_CONNECTIONS, Lighting:GetPropertyChangedSignal("Brightness"):Connect(function()
     if not FullBright.Enabled.Value and Lighting.Brightness ~= BaseBrightness then BaseBrightness = Lighting.Brightness end
+    if FullBright.Enabled.Value and Lighting.Brightness ~= FullBright.Brightness.Value then Lighting.Brightness = FullBright.Brightness.Value end
   end))
 
   UpdateLighting()
