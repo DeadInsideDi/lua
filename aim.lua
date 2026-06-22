@@ -123,12 +123,43 @@ return (function()
     return BestTarget
   end
 
+  function Aim.ChooseModelToAim(modelList: {Instance}): Instance | nil
+    local BestTarget = nil
+    local SmallestScore = math.huge
+
+    for _, model in modelList do
+      if not (model:IsA("Model") or model:IsA("BasePart")) then continue end
+
+      local Part
+      if model:IsA("Model") then
+        Part = GetPartOfModel(model)
+      else
+        Part = model
+      end
+      if not Part then continue end
+
+      local TargetPos = Part.Position
+      local Dist = (Camera.Focus.Position - TargetPos).Magnitude
+      if Dist > Aim.MaxDistance.Value then continue end
+
+      local AngleOffset = GetAngleOffset(TargetPos)
+      if AngleOffset > Aim.MaxAngle.Value then continue end
+
+      local Score = CountScore(Dist, AngleOffset, 0)
+      if Score < SmallestScore then
+        SmallestScore = Score
+        BestTarget = model
+      end
+    end
+    return BestTarget
+  end
+
   return Aim
 end)()
 -- Aim = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/aim.lua"))()
 
 -- AimToInstance(Instance) / AimToPosition(Vector3)
--- AimToPlayer(Player) / ChoosePlayerToAim({Player}?)
+-- AimToPlayer(Player) / ChoosePlayerToAim({Player}?) / ChooseModelToAim({Model})
 
 -- UseVirtualMouse: bool / Speed: number / AimPart: string / TeamCheck: bool
 -- MaxDistance: number / MaxAngle: number
