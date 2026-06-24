@@ -143,6 +143,6 @@ return (function()
 
   return FreeCam
 end)()
--- FreeCam = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/fullbright.lua"))()
+-- FreeCam = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeadInsideDi/lua/main/freecam.lua"))()
 
 -- Enabled: bool / Speed: number
