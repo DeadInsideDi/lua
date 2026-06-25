@@ -24,6 +24,7 @@ return (function()
 
     local function ApplyStyle(highlight: Highlight)
       highlight.Enabled = Profile.Enabled.Value
+      highlight.DepthMode = Profile.DepthMode.Value
       highlight.FillColor = Profile.FillColor.Value
       highlight.FillTransparency = Profile.FillTransparency.Value
       highlight.OutlineColor = Profile.OutlineColor.Value
@@ -42,6 +43,7 @@ return (function()
 
     Profile.ManagedTargets = {}
     Profile.Enabled = CreateValue(false, UpdateAllStyles)
+    Profile.DepthMode = CreateValue(Enum.HighlightDepthMode.AlwaysOnTop, UpdateAllStyles)
     Profile.FillColor = CreateValue(Color3.fromRGB(255, 0, 0), UpdateAllStyles)
     Profile.FillTransparency = CreateValue(0.75, UpdateAllStyles)
     Profile.OutlineColor = CreateValue(Color3.fromRGB(255, 255, 255), UpdateAllStyles)
@@ -52,7 +54,6 @@ return (function()
       if Profile.ManagedTargets[instance] then return end
 
       local Highlight = Instance.new("Highlight", ChamsFolder)
-      Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       Highlight.Adornee = instance
 
       ApplyStyle(Highlight)
@@ -105,4 +106,4 @@ end)()
 -- RemoveInstance(Instance) / Clear
 
 -- Enabled: bool / FillColor: Color3 / FillTransparency: number
--- OutlineColor: Color3 / OutlineTransparency: number
+-- OutlineColor: Color3 / OutlineTransparency: number / DepthMode: Enum.HighlightDepthMode
